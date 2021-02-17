@@ -1,23 +1,34 @@
 Team name: myKeys
 
-Team members:ben jenkins, Connor Blaszkiewicz, Brendan O'Brien, Brenden Richardson, Neta Shiff
+Team members Ben Jenkins, Connor Blaszkiewicz, Brendan O'Brien, Brenden Richardson, Neta Shiff
 
 # Introduction
 
-(In 2-4 paragraphs, describe your project concept)
+myKeys will be a keylogger designed for offensive security testing. The program will be split into two parts, a server and a client. The client side will be the keylogger that records all keystrokes, and saves them in a file. The file will be able to be encrypted or encoded before being sent to the user. The user will be able to choose whatever method of encryption or encoding is best for their needs. The client will communicate with the server regularly, sending it the encrypted or encoded logged information. The server’s role will be to receive this data, decrypt it, and present it for the user with a readable GUI.
 
 # Anticipated Technologies
 
-(What technologies are needed to build this project)
+* The program will be written in Python
+* Strong encryption method for stored data
+* GUI for showing the data to the user on the server end
+* CLI for setting up target end of program
+* Network communication between target and server using a secure protocol (TBD)
+* Google cloud for hosting server
 
 # Method/Approach
 
-(What is your estimated "plan of attack" for developing this project)
+* Some kind of Agile framework (ask in class tomorrow 2/17 about what might be best)
 
 # Estimated Timeline
 
-(Figure out what your major milestones for this project will be, including how long you anticipate it *may* take to reach that point)
+* Week 1: Determine small groups and specific technologies (protocols, encryption methods)
+* Week 2-3: Begin programming in small groups
+* Week 4: First round of thorough testing
+* Week 5-6: Finish small group responsibilities
+* Week 7-8: Testing everything together
 
 # Anticipated Problems
 
-(Describe any problems you foresee that you will need to overcome)
+* Transferring text files to the cloud
+* Getting the target-side program installed
+
