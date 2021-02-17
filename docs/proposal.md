@@ -17,7 +17,10 @@ myKeys will be a keylogger designed for offensive security testing. The program 
 
 # Method/Approach
 
-* Some kind of Agile framework (ask in class tomorrow 2/17 about what might be best)
+* Scrum/Agile with Trello board
+* Post tasks to trello board as necessary
+* Tasks can be tagged for your own group or for other groups
+    
 
 # Estimated Timeline
 
