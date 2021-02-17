@@ -1,6 +1,6 @@
-Team name:
+Team name: myKeys
 
-Team members:
+Team members:ben jenkins, Connor Blaszkiewicz, Brendan O'Brien, Brenden Richardson, Neta Shiff
 
 # Introduction
 
