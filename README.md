@@ -40,6 +40,7 @@ myKeys will be a keylogger designed for offensive security testing. The program 
 * [Brenden Richardson](https://github.com/BrendenRichardson/CIS350-HW2-Richardson.git) (Role 3, Role 4)
 * Connor Blaszkiewicz https://github.com/connorblask/CIS350-HW2-Blaszkiewicz/
 * Brendan O'Brien https://github.com/brendan7255/CIS350-HW2-Obrien
+* [Ben Jenkins](https://github.com/benjaminjenkins/CIS350-HW2-jenkins)
 
 ## Prerequisites
 
