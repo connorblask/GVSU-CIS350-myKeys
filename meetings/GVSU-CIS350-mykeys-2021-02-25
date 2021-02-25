@@ -10,13 +10,15 @@ Time:5:40 pm
 
 Discussion points: 
 
-* the gui
-* 
-* 
+* Discussed GUI layout
+* Encryption type,  
+* Program functionality
+* cloud communication
+* computer to computer communication
 
 Goals for next week (include responsibilities)
 
 * start writing key listeners 
-* adding download botton to the encrypt files
-*
+* adding download botton to the GUI
+* think how to pass the encryption choice between the host and the server
 
