@@ -67,8 +67,8 @@ def getSystemInfo():
 getSystemInfo()
 
 ### Run Length Variables ###
-numberOfLogs = 0
-logTime = 15 #This should be changed to 24 hours equivalent (I think)
+numberOfLogs = 1
+logTime = 86400 #This should be changed to 24 hours equivalent (I think)
 currentTime = time.time()
 endTime = currentTime + logTime #Will result in 24 hours after currentTime
 
