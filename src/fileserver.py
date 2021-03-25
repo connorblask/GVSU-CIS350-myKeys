@@ -8,7 +8,7 @@ import sys
 tcp_port = 25006
 buffer_size = 1024
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = '35.196.2.248' #this is our server's static IP
+host = '35.190.137.245' #this is our server's static IP
 serversocket.bind((host, tcp_port))
 
 #listening for a connection and accepting it
