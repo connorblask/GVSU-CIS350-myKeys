@@ -11,7 +11,7 @@ import os
 import getpass
 from requests import get
 import multiprocessing
-
+import gnupg
 
 
 loggedKeys = "loggedKeys.txt"
