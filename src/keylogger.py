@@ -1,6 +1,6 @@
 #Team myKeys
 #keylogger.py
-#Connor Blaszkiewicz and Neta Shiff
+#Connor Blaszkiewicz, Neta Shiff, Benjamin Jenkins, !!add rest of your names here!!
 
 # Libraries Used
 import socket
