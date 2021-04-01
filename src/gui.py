@@ -6,6 +6,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
+import socket
+import sys
 
 class MyKeysGui(tk.Frame):
     def __init__(self, parent):
@@ -107,27 +109,77 @@ class MyKeysGui(tk.Frame):
         decryptStartButton = tk.Button(decryptionTab, text='Start')
         decryptStartButton.pack(expand=1, fill="both")
 
-        # Download tab
+        ######################################
+        # Download tab #
+        ######################################
+        buffer_size = 1024
+        server_port = 25006
+        fileName = tk.StringVar()
+        ipVar = tk.StringVar()
+        fileName = tk.StringVar()
+        clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+
+        def connect():
+            dirInfo.config(text="Establishing connection...")
+            clientsocket.connect((ipVar.get(), server_port))
+            data = clientsocket.recv(buffer_size)
+            dirInfo.config(text=data.decode())
+        def disconnect():
+            sent_data = "quit"
+            clientsocket.send(sent_data.encode())
+            dirInfo.config(text="Connection closed.")
+            clientsocket.close()
+            root.destroy()
+        
+        def pull_file():
+            sent_data = ("pull" + fileName.get())
+            clientsocket.send(sent_data.encode())
+            status = clientsocket.recv(buffer_size)
+            if status.decode() == "failure":
+                dirInfo.config(text="Failed to retreive file.")
+            elif status.decode() == "success":
+                dirInfo.config(text="Downloading file...")
+                f = open (fileName.get(), 'wb')
+                l = clientsocket.recv(buffer_size)
+                while(l):
+                    sent_data = "received".encode()
+                    clientsocket.send(sent_data)
+                    if (l.decode()[0:3] == "eof"):
+                        break
+                    elif (l.decode()[0:3] == "con"):
+                        l = l[3:]
+                        f.write(l)
+                        l = clientsocket.recv(buffer_size)
+                f.close()
+                dirInfo.config(text = "Completed file transfer.")
+                return
+            else:
+                dirInfoLbl.config(text="Received unexpected message.")
+
+
         # IP label
         ipLbl = ttk.Label(downloadTab, text='Enter IP Address')
         ipLbl.pack(expand=1, fill="both")
 
         # IP entry field
-        ipVar = tk.StringVar()
         ipEntry = tk.Entry(downloadTab, textvariable=ipVar)
         ipEntry.pack(expand=1, fill="both")
 
         # connect button
-        connectButton = tk.Button(downloadTab, text='Connect')
+        connectButton = tk.Button(downloadTab, text='Connect', command=connect)
         connectButton.pack(expand=1, fill="both")
 
+        #disconnect button
+        disconnectButton = tk.Button(downloadTab, text='Disconnect + Quit', command=disconnect)
+        disconnectButton.pack(expand=1, fill="both")
+
         # directory info label
-        dirInfoLbl = ttk.Label(downloadTab, text='Directory Information')
+        dirInfoLbl = ttk.Label(downloadTab, text='Server Message')
         dirInfoLbl.pack(expand=1, fill="both")
 
         # display for directory information
-        dirInfoVar = tk.StringVar()
-        dirInfo = tk.Label(downloadTab, background="white", textvariable= dirInfoVar)
+        dirInfo = tk.Label(downloadTab, background="white", text='')
         dirInfo.pack(expand=1, fill="both")
 
         # file name label
@@ -135,13 +187,17 @@ class MyKeysGui(tk.Frame):
         fileNameLbl.pack(expand=1, fill="both")
 
         # file name entry
-        fileName = tk.StringVar()
         fileNameEntry = tk.Entry(downloadTab, textvariable=fileName)
         fileNameEntry.pack(expand=1, fill="both")
 
+        #download button
+        downloadButton = tk.Button(downloadTab, text='Download', command=pull_file)
+        downloadButton.pack(expand = 1, fill = "both")
+
         #window constraints
         parent.minsize(250,150)
-        #parent.maxsize(300,200)
+        #parent.maxsize(300,200)       
+
         
 if __name__ == "__main__":
     root = tk.Tk()

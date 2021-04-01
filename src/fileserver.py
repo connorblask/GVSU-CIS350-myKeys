@@ -8,7 +8,7 @@ import sys
 tcp_port = 25006
 buffer_size = 1024
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = 'localhost' #this is our server's static IP
+host = '127.0.0.1' #this used for local tests
 serversocket.bind((host, tcp_port))
 
 #listening for a connection and accepting it
