@@ -1,0 +1,20 @@
+Team name:mykey
+
+Members present: Brenden Richardson, Brendan O'Brien, Connor Blaszkiewicz, ben jenkins, Neta Shiff
+
+
+Date: 1.4
+
+Time: 5:15 pm
+
+Discussion points: 
+
+* GUI changes
+*  encryption types and how to test
+*  HM4- group
+
+Goals for next week (include responsibilities)
+
+* finish AES encryption and testing it
+*  integration testing and error handling
+* integration of the GUI with the cloud
