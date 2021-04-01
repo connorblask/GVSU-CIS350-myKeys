@@ -60,5 +60,5 @@
   - Responsible: Ben 
 - Network Error Handling and Debugging
   - Description: Carefully going through the code for networking to make the program handle any errors in the file transfer process.
-  - Estimated time to Complete: 1 week
+  - Estimated time to Complete: 2 weeks
   - Responsible: Brendan O’Brien and Ben
