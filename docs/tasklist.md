@@ -3,7 +3,7 @@
 ## Completed
 
 - Functional isolated encryption and decryption of plaintext files using DES3,PGP and FERNIT
-  - Description: 
+  - Description: When encryption methods are used outside of the keylogger payload decryption keys are generated and plaintext files can be encrypted and decrypted.
   - Estimated time to Complete: 2 weeks
   - Responsible: Connor Blaszkiewicz and Neta Shiff
 - GUI creation
