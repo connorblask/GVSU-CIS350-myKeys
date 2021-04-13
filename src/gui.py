@@ -8,6 +8,8 @@ from tkinter import filedialog
 from tkinter import messagebox
 import socket
 import sys
+#import Decryot_files
+#import KeyLog
 
 class MyKeysGui(tk.Frame):
     def __init__(self, parent):
@@ -29,7 +31,112 @@ class MyKeysGui(tk.Frame):
 
         tab.pack(expand=1, fill="both")
 
-        # Configuration Tab 
+        self.pgpEmail = tk.StringVar()
+        self.passPhrase = tk.StringVar()
+        self.generatedKey = tk.StringVar()
+        self.keyVar = tk.StringVar()
+
+        ######################################
+        # Configuration Tab #
+        ######################################
+
+         # Start function
+        def startEncryption():
+            if (check1.get() == 0) & (check2.get() == 0):
+                 messagebox.showwarning('Invalid Entry', 'Must choose at least 1 selection for file retrieval')
+            elif (self.eType.get() == "pgp"):
+                 pgpEntryEncrypt()
+                 if (check1.get() == 1) & (check2.get() == 0):
+                     #pgp encryption for system info only
+                     self.generatedKey.set(self.passPhrase.get())
+
+                 elif (check2.get() == 1) & (check1.get() == 0):
+                     #pgp encryption for keylogger only
+                     self.generatedKey.set(self.passPhrase.get())
+
+                 elif (check1.get() == 1) & (check2.get() == 1):
+                     #pgp encryption for system infor and keylogger
+                     self.generatedKey.set(self.passPhrase.get())
+
+            elif (self.eType.get() == "fernet"):
+                 if (check1.get() == 1) & (check2.get() == 0):
+                     #fernet encryption for system info only
+                     self.generatedKey.set('key here')
+
+                 elif (check2.get() == 1) & (check1.get() == 0):
+                     #fernet encryption for keylogger only
+                     self.generatedKey.set('key here')
+
+                 elif (check1.get() == 1) & (check2.get() == 1):
+                     #fernet encryption for system infor and keylogger
+                     self.generatedKey.set('key here')
+
+            elif (self.eType.get() == "DES3"):
+                 if (check1.get() == 1) & (check2.get() == 0):
+                     #DES3 encryption for system info only
+                     self.generatedKey.set('key here')
+
+                 elif (check2.get() == 1) & (check1.get() == 0):
+                     #DES3 encryption for keylogger only
+                     self.generatedKey.set('key here')
+
+                 elif (check1.get() == 1) & (check2.get() == 1):
+                     #DES3 encryption for system infor and keylogger
+                     self.generatedKey.set('key here')
+
+            elif (self.eType.get() == "AES"):
+                 if (check1.get() == 1) & (check2.get() == 0):
+                     #AES encryption for system info only
+                     self.generatedKey.set('key here')
+
+                 elif (check2.get() == 1) & (check1.get() == 0):
+                     #AES encryption for keylogger only
+                     self.generatedKey.set('key here')
+
+                 elif (check1.get() == 1) & (check2.get() == 1):
+                     #AES encryption for system infor and keylogger
+                     self.generatedKey.set('key here')
+
+        #pgp encryption popup window for email and passphrase        
+        def pgpEntryEncrypt():
+            #pgp entry window enter button function
+            def enterBtn():
+                pgpKey.destroy()
+                pgpKey.update()
+
+            #window creation
+            pgpKey = tk.Toplevel(root)
+            pgpKey.grab_set()
+
+            pgpKey.title("pgp Entry")
+
+            #email label
+            pgpLbl = ttk.Label(pgpKey, text='Email:')
+            pgpLbl.pack(expand=1, fill="both")
+
+            #email entry
+            pgpEmail = tk.StringVar()
+            pgpEmail = ttk.Entry(pgpKey, textvariable=self.pgpEmail)
+            pgpEmail.pack(expand=1, fill="both")
+
+            #passphrase label
+            pgpLbl2 = ttk.Label(pgpKey, text='Passphrase:')
+            pgpLbl2.pack(expand=1, fill="both")
+
+            #passphrase entry
+            pgpPass = tk.StringVar()
+            pgpPass = ttk.Entry(pgpKey, textvariable=self.passPhrase)
+            pgpPass.pack(expand=1, fill="both")
+
+            #enter button
+            pgpButton = tk.Button(pgpKey, text='Enter', command=enterBtn)
+            pgpButton.pack(expand=1, fill="both")
+            
+            pgpKey.minsize(250,120)
+
+            #pauses until enter button is pressed
+            root.wait_window(pgpKey)
+
         # encryption type label
         encryptLbl = ttk.Label(configTab, text='Encryption Type')
         encryptLbl.pack(expand=1, fill="both")
@@ -49,11 +156,6 @@ class MyKeysGui(tk.Frame):
         check1 = tk.IntVar()
         check2 = tk.IntVar()
 
-        # check buttons
-        def startFunction():
-            if (check1.get() == 0) & (check2.get() == 0):
-                 messagebox.showwarning('Invalid Entry', 'Must choose at least 1 selection for file retrieval')
-
         # checkbutton for system info
         sysButton = ttk.Checkbutton(configTab, text='System Info', variable=check1)
         sysButton.pack(expand=1, fill="both")
@@ -61,30 +163,86 @@ class MyKeysGui(tk.Frame):
         # checkbutton for keylogger
         keyLButton = ttk.Checkbutton(configTab, text='Keylogger', variable=check2)
         keyLButton.pack(expand=1, fill="both")
-    
-        #file path function
-        #def filePath():
-        #    file = filedialog.askopenfilename()
-
-        # filedialog chooser
-        # pathButton = tk.Button(configTab, text='File Path', command=filePath)
-        # pathButton.pack(expand=1, fill="both")
 
         # button to start program
-        startButton = tk.Button(configTab, text='Start', command=startFunction)
+        startButton = tk.Button(configTab, text='Start', command=startEncryption)
         startButton.pack(expand=1, fill="both")
 
         # label for generated key
         keyGenLbl = ttk.Label(configTab, text='Generated Key:')
         keyGenLbl.pack(expand=1, fill="both")
-
-        generatedKey = ''
         
         # decryption key
-        decryptKeyLbl = ttk.Label(configTab,background="white", textvariable=generatedKey)
+        decryptKeyLbl = ttk.Label(configTab,background="white", textvariable=self.generatedKey)
         decryptKeyLbl.pack(expand=1, fill="both")
 
-        # Decryption Tab
+        ######################################
+        # Decryption Tab #
+        ######################################
+
+        def startDecryption():
+            if (self.dType.get() == "pgp"):
+                #pgp decryption
+                pgpEntryDecrypt()
+                print(self.passPhrase.get())
+            elif (self.dType.get() == "fernet"):
+                #fernet decryption
+                print(self.keyVar.get())
+            elif (self.dType.get() == "DES3"):
+                #DES3 decryption
+                print(self.keyVar.get())
+            elif (self.dType.get() == "AES"):
+                #AES decryption
+                print(self.keyVar.get())
+
+        #pgp decryption popup window for email and passphrase
+        def pgpEntryDecrypt():
+            #pgp entry window enter button function
+            def startBtn():
+                pgpKey.destroy()
+                pgpKey.update()
+
+            #window creation
+            pgpKey = tk.Toplevel(root)
+            pgpKey.grab_set()
+
+            pgpKey.title("pgp Entry")
+
+            #email label
+            pgpLbl = ttk.Label(pgpKey, text='Email:')
+            pgpLbl.pack(expand=1, fill="both")
+
+            #email entry
+            pgpEmail = tk.StringVar()
+            pgpEmail = ttk.Entry(pgpKey, textvariable=self.pgpEmail)
+            pgpEmail.pack(expand=1, fill="both")
+
+            #passphrase label
+            pgpLbl2 = ttk.Label(pgpKey, text='Passphrase:')
+            pgpLbl2.pack(expand=1, fill="both")
+
+            #passphrase entry
+            pgpPass = tk.StringVar()
+            pgpPass = ttk.Entry(pgpKey, textvariable=self.passPhrase)
+            pgpPass.pack(expand=1, fill="both")
+
+            #enter button
+            pgpButton = tk.Button(pgpKey, text='Enter', command=startBtn)
+            pgpButton.pack(expand=1, fill="both")
+            
+            pgpKey.minsize(250,120)
+
+            #pauses until enter button is pressed
+            root.wait_window(pgpKey)
+
+        def checkDropdown(event):
+            if(self.dType.get() == "pgp"):
+                keyEntry.delete(0, 'end')
+                keyEntry.config(state='disabled')
+            else:
+                 keyEntry.delete(0, 'end')
+                 keyEntry.config(state='enabled')
+        
         # decryption type label
         decryptLbl = ttk.Label(decryptionTab, text='Decryption Type')
         decryptLbl.pack(expand=1, fill="both")
@@ -95,18 +253,18 @@ class MyKeysGui(tk.Frame):
         dTypeDrop['values'] = ("pgp", "fernet", "DES3", "AES")
         dTypeDrop.current(0)
         dTypeDrop.pack(expand=1, fill="both")
+        dTypeDrop.bind("<<ComboboxSelected>>", checkDropdown)
 
         # decrytion key label
         decryptKeylbl = ttk.Label(decryptionTab, text='Enter Decryption Key')
         decryptKeylbl.pack(expand=1, fill="both")
 
         # decryption key entry box
-        keyVar = tk.IntVar()
-        keyEntry = ttk.Entry(decryptionTab, textvariable=keyVar)
+        keyEntry = ttk.Entry(decryptionTab, textvariable=self.keyVar, state='disabled')
         keyEntry.pack(expand=1, fill="both")
 
         # decryption start button
-        decryptStartButton = tk.Button(decryptionTab, text='Start')
+        decryptStartButton = tk.Button(decryptionTab, text='Start', command=startDecryption)
         decryptStartButton.pack(expand=1, fill="both")
 
         ######################################
