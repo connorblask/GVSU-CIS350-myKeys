@@ -11,7 +11,7 @@ import threading
 udp_port = 25005
 buffer_size = 1024
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-host = '127.0.0.1' #this used for local tests
+host = '35.231.244.179' #this used for local tests
 
 #setting up host to listen for connections
 serversocket.bind((host, udp_port))

