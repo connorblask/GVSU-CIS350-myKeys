@@ -1,5 +1,4 @@
 __author__ = 'Neta'
-#this class dael with des decrypt and encrypt
 import files_tr
 
 
