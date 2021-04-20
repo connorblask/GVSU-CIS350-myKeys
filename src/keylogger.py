@@ -291,8 +291,7 @@ def encrypt_aes(key, original_file):
 def encrypt_gnupg(email, key, file_to_encrypt, encrypted_file):
     # encrypt file name original_file
     # output in the dir and the encrypt file that we entered
-    gpg = gnupg.GPG(gnupghome='C:\\Program Files (x86)\\GnuPG\\bin',
-                    gpgbinary='C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe')
+    gpg = gnupg.GPG()
     with open(file_to_encrypt, 'rb') as f:
         status = gpg.encrypt_file(
             f, recipients=[email],
