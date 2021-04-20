@@ -259,18 +259,33 @@ class MyKeysGui(tk.Frame):
         ######################################
 
         def startDecryption():
+
+        #####TO-DO: INSTANTIATE LOCAL VARIABLES: #####
+        # name: name of file, drawn from file chooser
+        # key: drawn from key field or config file
+        # email and passphrase: drawn from pgp dialog
+
             if (self.dType.get() == "pgp"):
                 # pgp decryption
                 pgpEntryDecrypt()
+
+                ###TO-DO: CALL PGP DECRPYT FUNCTION###
+
                 print(self.passPhrase.get())
            # elif (self.dType.get() == "fernet"):
                 # fernet decryption
                 #print(self.keyVar.get())
             elif (self.dType.get() == "DES3"):
                 # DES3 decryption
+
+                ###TO-DO: CALL DES3 DECRYPT FUNCTION###
+
                 print(self.keyVar.get())
             elif (self.dType.get() == "AES"):
                 # AES decryption
+
+                ###TO-DO: CALL AES DECRYPT FUNCTION##
+                
                 print(self.keyVar.get())
 
         # pgp decryption popup window for email and passphrase
@@ -320,6 +335,14 @@ class MyKeysGui(tk.Frame):
             else:
                  keyEntry.delete(0, 'end')
                  keyEntry.config(state='enabled')
+
+
+
+        #######################################
+        ###TO-DO: BRENDAN - ADD FILE CHOOSER###
+        #######################################
+
+
         
         # decryption type label
         decryptLbl = ttk.Label(decryptionTab, text='Decryption Type')
