@@ -4,7 +4,7 @@
 
 import tkinter as tk
 from tkinter import ttk
-from tkinter import filedialog
+from tkinter import filedialog as fd
 from tkinter import messagebox
 import socket
 import sys
@@ -53,11 +53,10 @@ class MyKeysGui(tk.Frame):
                      configFile.write('PGP\n')
                      configFile.write('1\n')
                      configFile.write('0\n')
+                     configFile.write(self.passPhrase.get() + '\n')
+                     configFile.write(self.pgpEmail.get())
 
-                     #configFile.write(self.pgpEmail.get() + '\n')
-                     
-                     #configFile.write(Key_Generator.pgp_generation(self.pgpEmail, self.passPhrase))
-
+                     self.generatedKey.set(self.passPhrase.get())
                      configFile.close()
 
                  elif (check2.get() == 1) & (check1.get() == 0):
@@ -67,11 +66,10 @@ class MyKeysGui(tk.Frame):
                      configFile.write('PGP\n')
                      configFile.write('0\n')
                      configFile.write('1\n')
+                     configFile.write(self.passPhrase.get() + '\n')
+                     configFile.write(self.pgpEmail.get())
 
-                     #configFile.write(self.pgpEmail.get() + '\n')
-                     
-                     #configFile.write(Key_Generator.pgp_generation(self.pgpEmail, self.passPhrase))
-
+                     self.generatedKey.set(self.passPhrase.get())
                      configFile.close()
 
                  elif (check1.get() == 1) & (check2.get() == 1):
@@ -81,11 +79,10 @@ class MyKeysGui(tk.Frame):
                      configFile.write('PGP\n')
                      configFile.write('1\n')
                      configFile.write('1\n')
+                     configFile.write(self.passPhrase.get() + '\n')
+                     configFile.write(self.pgpEmail.get())
 
-                     #configFile.write(self.pgpEmail.get() + '\n')
-                     
-                     #configFile.write(Key_Generator.pgp_generation(self.pgpEmail, self.passPhrase))
-
+                     self.generatedKey.set(self.passPhrase.get())
                      configFile.close()
 
             #elif (self.eType.get() == "fernet"):
@@ -109,7 +106,8 @@ class MyKeysGui(tk.Frame):
                      configFile.write('DES3\n')
                      configFile.write('1\n')
                      configFile.write('0\n')
-                     self.generatedKey.set(Key_Generator.DES3_generation())
+                     self.keyVar = Key_Generator.DES3_generation()
+                     self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
 
                      configFile.close()
@@ -121,7 +119,8 @@ class MyKeysGui(tk.Frame):
                      configFile.write('DES3\n')
                      configFile.write('0\n')
                      configFile.write('1\n')
-                     self.generatedKey.set(Key_Generator.DES3_generation())
+                     self.keyVar = Key_Generator.DES3_generation()
+                     self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
 
                      configFile.close()
@@ -133,7 +132,8 @@ class MyKeysGui(tk.Frame):
                      configFile.write('DES3\n')
                      configFile.write('1\n')
                      configFile.write('1\n')
-                     self.generatedKey.set(Key_Generator.DES3_generation())
+                     self.keyVar = Key_Generator.DES3_generation()
+                     self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
 
                      configFile.close()
@@ -146,7 +146,8 @@ class MyKeysGui(tk.Frame):
                      configFile.write('AES\n')
                      configFile.write('1\n')
                      configFile.write('0\n')
-                     self.generatedKey.set(Key_Generator.generate_AES(self))
+                     self.keyVar = Key_Generator.generate_AES(self)
+                     self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
 
                      configFile.close()
@@ -158,7 +159,8 @@ class MyKeysGui(tk.Frame):
                      configFile.write('AES\n')
                      configFile.write('0\n')
                      configFile.write('1\n')
-                     self.generatedKey.set(Key_Generator.generate_AES(self))
+                     self.keyVar = Key_Generator.generate_AES(self)
+                     self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
 
                      configFile.close()
@@ -170,7 +172,8 @@ class MyKeysGui(tk.Frame):
                      configFile.write('AES\n')
                      configFile.write('1\n')
                      configFile.write('1\n')
-                     self.generatedKey.set(Key_Generator.generate_AES(self))
+                     self.keyVar = Key_Generator.generate_AES(self)
+                     self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
 
                      configFile.close()
@@ -262,14 +265,22 @@ class MyKeysGui(tk.Frame):
 
         #####TO-DO: INSTANTIATE LOCAL VARIABLES: #####
         # name: name of file, drawn from file chooser
+            fileName = ''
         # key: drawn from key field or config file
+            key1 = self.keyVar
         # email and passphrase: drawn from pgp dialog
+            email1 = self.pgpEmail
+            passphrase1 = self.passPhrase
 
             if (self.dType.get() == "pgp"):
                 # pgp decryption
                 pgpEntryDecrypt()
 
                 ###TO-DO: CALL PGP DECRPYT FUNCTION###
+                print(fileName.get())
+                print(key1.get())
+                print(email1.get())
+                print(passphrase1.get())
 
                 print(self.passPhrase.get())
            # elif (self.dType.get() == "fernet"):
@@ -336,13 +347,14 @@ class MyKeysGui(tk.Frame):
                  keyEntry.delete(0, 'end')
                  keyEntry.config(state='enabled')
 
+        # file dialog function
+        def callFile():
+            callFileName = fd.askopenfilename()
+            fileName = callFileName
 
-
-        #######################################
-        ###TO-DO: BRENDAN - ADD FILE CHOOSER###
-        #######################################
-
-
+        # file button
+        fileBtn = tk.Button(decryptionTab, text='Choose File', command=callFile)
+        fileBtn.pack(expand=1, fill="both")
         
         # decryption type label
         decryptLbl = ttk.Label(decryptionTab, text='Decryption Type')
