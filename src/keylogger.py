@@ -79,7 +79,7 @@ def sendFile(filename, isSysInfo):
     clientsocket.sendto(sent_data.encode(), (server_ip, udpPort))
     l = f.read(buffer_size)
     while (l):
-        clientsocket.sendto(l.decode(), (server_ip, udpPort))
+        clientsocket.sendto(l, (server_ip, udpPort))
         l = f.read(buffer_size)
     f.close()
     clientsocket.close()
