@@ -19,6 +19,10 @@ print("Server started on " + host + " on port " + str(udp_port) + "\n")
 
 openFile = False
 
+def close_file():
+    openFile = False
+    print("No connection received for 25s, connection timing out.")
+
 #accepting a connection
 while(True):
     data, addr = serversocket.recvfrom(buffer_size)
@@ -40,10 +44,6 @@ while(True):
         f.write(l)
     f.close()
 
-
-def close_file():
-    openFile = False
-    print("No connection received for 25s, connection timing out.")
     
     
 
