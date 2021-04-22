@@ -1,4 +1,5 @@
 # Team myKeys
+# Team myKeys
 # myKeysGUI.py
 # Brenden Richardson
 
@@ -8,8 +9,12 @@ from tkinter import filedialog as fd
 from tkinter import messagebox
 import socket
 import sys
-
+import Decryot_files
 import Key_Generator
+
+
+# des 3
+iv = b'\xc3\xd0\xb9\x82\xe7\x902\xe4'
 
 class MyKeysGui(tk.Frame):
     def __init__(self, parent):
@@ -281,20 +286,21 @@ class MyKeysGui(tk.Frame):
                 print(key1.get())
                 print(email1.get())
                 print(passphrase1.get())
-
                 print(self.passPhrase.get())
+                Decryot_files.decrypt_pgp(passphrase1, fileName)
            # elif (self.dType.get() == "fernet"):
                 # fernet decryption
                 #print(self.keyVar.get())
             elif (self.dType.get() == "DES3"):
                 # DES3 decryption
-
-                ###TO-DO: CALL DES3 DECRYPT FUNCTION###
+                Decryot_files.des3_decrypt(key1, fileName, iv)
+                # TO-DO: check it is the right keyy
+                # CALL DES3 DECRYPT FUNCTION###
 
                 print(self.keyVar.get())
             elif (self.dType.get() == "AES"):
                 # AES decryption
-
+                Decryot_files.decrypt_aes(fileName, key1)
                 ###TO-DO: CALL AES DECRYPT FUNCTION##
                 
                 print(self.keyVar.get())

