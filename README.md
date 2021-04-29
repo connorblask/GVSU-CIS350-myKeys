@@ -57,6 +57,6 @@ myKeys will be a keylogger designed for offensive security testing. The program 
 * Run Keylogger payload
 * Connect to server through GUI download tab (IP: 35.231.244.179)
 * Enter files you want to download
-* Decrypt file through decrypt tab using generated key (bottom line of config file)
+* Decrypt file through decrypt tab using generated key (bottom of config tab)
 
 
