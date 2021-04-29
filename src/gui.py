@@ -18,6 +18,8 @@ import fernetDecrypt
 
 
 # des 3
+from src import Key_Generator
+
 iv = b'\xc3\xd0\xb9\x82\xe7\x902\xe4'
 
 class MyKeysGui(tk.Frame):
@@ -161,7 +163,7 @@ class MyKeysGui(tk.Frame):
                      self.keyVar = Key_Generator.DES3_generation()
                      self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
-                     configFile.write(iv)
+                     configFile.write(str(iv))
 
                      configFile.close()
 
@@ -175,7 +177,7 @@ class MyKeysGui(tk.Frame):
                      self.keyVar = Key_Generator.DES3_generation()
                      self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
-                     configFile.write(iv)
+                     configFile.write(str(iv))
 
                      configFile.close()
 
@@ -200,7 +202,7 @@ class MyKeysGui(tk.Frame):
                      configFile.write('AES\n')
                      configFile.write('0\n')
                      configFile.write('1\n')
-                     self.keyVar = Key_Generator.generate_AES(self)
+                     self.keyVar = Key_Generator.generate_AES()
                      self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
 
@@ -213,7 +215,7 @@ class MyKeysGui(tk.Frame):
                      configFile.write('AES\n')
                      configFile.write('1\n')
                      configFile.write('1\n')
-                     self.keyVar = Key_Generator.generate_AES(self)
+                     self.keyVar = Key_Generator.generate_AES()
                      self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
 
