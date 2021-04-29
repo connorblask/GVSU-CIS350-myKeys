@@ -49,8 +49,11 @@ myKeys will be a keylogger designed for offensive security testing. The program 
 
 *enter to your command line and Pip for gnupg, Cryptodome, pynupt, cryptography, requests  
 
+*make sure that the path to the project and for gnupg is the same as written inside the code
+
 ## Run Instructions
 Run the google cloud server
+
 run the gui 
 
 
