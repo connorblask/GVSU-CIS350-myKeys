@@ -36,7 +36,7 @@ myKeys will be a keylogger designed for offensive security testing. The program 
 
 ## Team Members and Roles
 
-* [Neta Shiff, link to repository](https://github.com/netashiff/CIS-HM2-Shiff.git)
+* [Neta Shiff](https://github.com/netashiff/CIS-HM2-Shiff.git)
 * [Brenden Richardson](https://github.com/BrendenRichardson/CIS350-HW2-Richardson.git)
 * [Connor Blaszkiewicz](https://github.com/connorblask/CIS350-HW2-Blaszkiewicz/)
 * [Brendan O'Brien](https://github.com/brendan7255/CIS350-HW2-Obrien)
