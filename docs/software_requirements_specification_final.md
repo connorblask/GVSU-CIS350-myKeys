@@ -19,8 +19,7 @@ Software requirements are helping us to define the system that we want; they giv
 | :-------------: | :----------: |
 | FR4 | The target shall use a connectionless protocol (UDP-based) to send a new keylog file to the server every hour {#F2.1} |
 | FR5 | The server shall not send any packets to the target device {#F2.2} |
-| FR6 | The user shall utilize a TCP-based protocol to download files from the server, allowing for file viewing, selection, authentication, 
-and encrypted communication {#F2.3} |
+| FR6 | The user shall utilize a TCP-based protocol to download files from the server, allowing for file viewing, selection, authentication, and encrypted communication {#F2.3} |
 | … | … |
 
 ### GUI
