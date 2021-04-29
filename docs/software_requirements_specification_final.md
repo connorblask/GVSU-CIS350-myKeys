@@ -8,27 +8,28 @@ Software requirements are helping us to define the system that we want; they giv
  
 | ID  | Requirement 	|
 | :-------------: | :----------: |
-| FR1 | <Requirement 1> |
-| FR2 | <Requirement 2> |
-| FR3 | <Requirement 3> |
+| FR1 | The program shall be able to encrypt in Fernet encryption {#F1.1} |
+| FR2 | The user shall have the option to encrypt a text file using the encryption methods available to them {#F1.2} |
+| FR3 | Software shall encrypt the text file before it is sent to the cloud software. {#F1.3} |
 | … | … |
  
 ### Cloud
  
 | ID  | Requirement 	|
 | :-------------: | :----------: |
-| FR4 | <Requirement 1> |
-| FR5 | <Requirement 2> |
-| FR6 | <Requirement 3> |
+| FR4 | The target shall use a connectionless protocol (UDP-based) to send a new keylog file to the server every hour {#F2.1} |
+| FR5 | The server shall not send any packets to the target device {#F2.2} |
+| FR6 | The user shall utilize a TCP-based protocol to download files from the server, allowing for file viewing, selection, authentication, 
+and encrypted communication {#F2.3} |
 | … | … |
 
 ### GUI
  
 | ID  | Requirement 	|
 | :-------------: | :----------: |
-| FR7 | <Requirement 1> |
-| FR8 | <Requirement 2> |
-| FR9 | <Requirement 3> |
+| FR7 | Users shall be able to pull the encrypted text file from a remote network through the GUI. {#F3.1} |
+| FR8 | Users shall be able to copy the key {#F3.2} |
+| FR9 | Users shall be able to connect to the cloud and exit {#F3.3} |
 | … | … |
  
 ### Keylogger
