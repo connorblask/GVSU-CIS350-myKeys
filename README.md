@@ -36,24 +36,27 @@ myKeys will be a keylogger designed for offensive security testing. The program 
 
 ## Team Members and Roles
 
-* Neta Shiff, link to repository: https://github.com/netashiff/CIS-HM2-Shiff.git (Role 1, Role 2)
-* [Brenden Richardson](https://github.com/BrendenRichardson/CIS350-HW2-Richardson.git) (Role 3, Role 4)
-* Connor Blaszkiewicz https://github.com/connorblask/CIS350-HW2-Blaszkiewicz/
-* Brendan O'Brien https://github.com/brendan7255/CIS350-HW2-Obrien
+* [Neta Shiff, link to repository](https://github.com/netashiff/CIS-HM2-Shiff.git)
+* [Brenden Richardson](https://github.com/BrendenRichardson/CIS350-HW2-Richardson.git)
+* [Connor Blaszkiewicz](https://github.com/connorblask/CIS350-HW2-Blaszkiewicz/)
+* [Brendan O'Brien](https://github.com/brendan7255/CIS350-HW2-Obrien)
 * [Ben Jenkins](https://github.com/benjaminjenkins/CIS350-HW2-jenkins)
 
 ## Prerequisites
-*Install Gnupg -  on your computer via the website https://gnupg.org/download/
+* Install Gnupg -  on your computer via the website https://gnupg.org/download/
 
-*Have the google cloud server that was created for the project    
+* Have the google cloud server that was created for the project    
 
-*enter to your command line and Pip for gnupg, Cryptodome, pynupt, cryptography, requests  
+* enter to your command line and Pip for gnupg, Cryptodome, pynupt, cryptography, requests  
 
-*make sure that the path to the project and for gnupg is the same as written inside the code
+* make sure that the path to the project and for gnupg is the same as written inside the code
 
 ## Run Instructions
-Run the google cloud server
-
-run the gui 
+* Run the configuration tab through the GUI
+* Run the google cloud server
+* Run Keylogger payload
+* Connect to server through GUI download tab (IP: 35.231.244.179)
+* Enter files you want to download
+* Decrypt file through decrypt tab using generated key (bottom line of config file)
 
 
