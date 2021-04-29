@@ -52,7 +52,7 @@ myKeys will be a keylogger designed for offensive security testing. The program 
 * make sure that the path to the project and for gnupg is the same as written inside the code
 
 ## Run Instructions
-* Run the configuration tab through the GUI
+* Run the configuration tab through the GUI to create a config file
 * Run the google cloud server
 * Run Keylogger payload
 * Connect to server through GUI download tab (IP: 35.231.244.179)
