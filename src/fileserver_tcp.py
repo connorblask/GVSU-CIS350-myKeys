@@ -9,7 +9,7 @@ tcp_port = 25006
 buffer_size = 1024
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = '35.231.244.179' #this used for local tests
-serversocket.bind((host, tcp_port))
+serversocket.bind(('', tcp_port))
 
 #listening for a connection and accepting it
 print("Server started on " + host + " on port " + str(tcp_port) + "\n")

@@ -14,14 +14,15 @@ serversocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 host = '35.231.244.179' #this used for local tests
 
 #setting up host to listen for connections
-serversocket.bind((host, udp_port))
+serversocket.bind(('', udp_port))
 print("Server started on " + host + " on port " + str(udp_port) + "\n")
 
 openFile = False
 
 def close_file():
+    global openFile
     openFile = False
-    print("No connection received for 25s, connection timing out.")
+    print("No connection received for 20s, connection timing out.")
 
 #accepting a connection
 while(True):
@@ -38,7 +39,8 @@ while(True):
     f = open (filename, 'wb')
     print("Connection established. Awaiting transmission.\n")
     openFile = True
-    timeout_timer = threading.Timer(25.0, close_file)
+    timeout_timer = threading.Timer(20.0, close_file)
+    timeout_timer.start()
     while(openFile):
         l, addr = serversocket.recvfrom(buffer_size)
         f.write(l)
