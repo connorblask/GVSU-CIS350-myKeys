@@ -43,5 +43,12 @@ myKeys will be a keylogger designed for offensive security testing. The program 
 * [Ben Jenkins](https://github.com/benjaminjenkins/CIS350-HW2-jenkins)
 
 ## Prerequisites
+*Install Gnupg -  on your computer via the website https://gnupg.org/download/
+*Have the google cloud server that was created for the project 
+*enter to your command line and Pip for gnupg, Cryptodome, pynupt, cryptography, requests  
 
 ## Run Instructions
+Run the google cloud server
+run the gui 
+
+
