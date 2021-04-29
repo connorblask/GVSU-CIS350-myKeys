@@ -44,8 +44,7 @@ myKeys will be a keylogger designed for offensive security testing. The program 
 
 ## Prerequisites
 *Install Gnupg -  on your computer via the website https://gnupg.org/download/
-
-*Have the google cloud server that was created for the project 
+*Have the google cloud server that was created for the project                                                
 *enter to your command line and Pip for gnupg, Cryptodome, pynupt, cryptography, requests  
 
 ## Run Instructions
