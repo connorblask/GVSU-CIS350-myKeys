@@ -3,7 +3,7 @@
 # myKeysGUI.py
 # Brenden Richardson
 
-#import os
+import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
@@ -295,8 +295,10 @@ class MyKeysGui(tk.Frame):
         keyGenLbl.pack(expand=1, fill="both")
         
         # decryption key
-        decryptKeyLbl = ttk.Label(configTab,background="white", textvariable=self.generatedKey)
+        decryptKeyLbl = tk.Entry(configTab,background="white", textvariable=self.generatedKey)
         decryptKeyLbl.pack(expand=1, fill="both")
+        #decryptKeyLbl.configure(bg=configTab.cget('bg'), relief="flat")
+        decryptKeyLbl.configure(state='readonly')
 
         ######################################
         # Decryption Tab #
