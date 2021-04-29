@@ -3,6 +3,7 @@
 # myKeysGUI.py
 # Brenden Richardson
 
+#import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
@@ -10,7 +11,10 @@ from tkinter import messagebox
 import socket
 import sys
 import Decryot_files
-import Key_Generator
+#import Key_Generator
+import generateFernetKey
+import fernetDecrypt
+
 
 
 # des 3
@@ -40,6 +44,8 @@ class MyKeysGui(tk.Frame):
         self.passPhrase = tk.StringVar()
         self.generatedKey = tk.StringVar()
         self.keyVar = tk.StringVar()
+        self.fileName = tk.StringVar()
+        self.key1 = tk.StringVar()
 
         ######################################
         # Configuration Tab #
@@ -78,7 +84,7 @@ class MyKeysGui(tk.Frame):
                      configFile.close()
 
                  elif (check1.get() == 1) & (check2.get() == 1):
-                     # pgp encryption for system infor and keylogger
+                     # pgp encryption for system info and keylogger
                      configFile = open('config.txt', "w+")
 
                      configFile.write('PGP\n')
@@ -90,18 +96,45 @@ class MyKeysGui(tk.Frame):
                      self.generatedKey.set(self.passPhrase.get())
                      configFile.close()
 
-            #elif (self.eType.get() == "fernet"):
-             #    if (check1.get() == 1) & (check2.get() == 0):
-                     #fernet encryption for system info only
-              #       self.generatedKey.set('key here')
+            elif (self.eType.get() == "fernet"):
+                 if (check1.get() == 1) & (check2.get() == 0):
+                     # fernet encryption for system info only
+                     configFile = open('config.txt', "w+")
 
-               #  elif (check2.get() == 1) & (check1.get() == 0):
+                     configFile.write('Fernet\n')
+                     configFile.write('1\n')
+                     configFile.write('0\n')
+                     self.keyVar = generateFernetKey.Fernet.generate_key()
+                     self.generatedKey.set(self.keyVar)
+                     configFile.write(self.generatedKey.get())
+
+                     configFile.close()
+
+                 elif (check2.get() == 1) & (check1.get() == 0):
                      #fernet encryption for keylogger only
-                #     self.generatedKey.set('key here')
+                     configFile = open('config.txt', "w+")
 
-                 #elif (check1.get() == 1) & (check2.get() == 1):
+                     configFile.write('Fernet\n')
+                     configFile.write('0\n')
+                     configFile.write('1\n')
+                     self.keyVar = generateFernetKey.Fernet.generate_key()
+                     self.generatedKey.set(self.keyVar)
+                     configFile.write(self.generatedKey.get())
+
+                     configFile.close()
+
+                 elif (check1.get() == 1) & (check2.get() == 1):
                      #fernet encryption for system infor and keylogger
-                  #   self.generatedKey.set('key here')
+                     configFile = open('config.txt', "w+")
+
+                     configFile.write('Fernet\n')
+                     configFile.write('1\n')
+                     configFile.write('1\n')
+                     self.keyVar = generateFernetKey.Fernet.generate_key()
+                     self.generatedKey.set(self.keyVar)
+                     configFile.write(self.generatedKey.get())
+
+                     configFile.close()
 
             elif (self.eType.get() == "DES3"):
                  if (check1.get() == 1) & (check2.get() == 0):
@@ -114,6 +147,7 @@ class MyKeysGui(tk.Frame):
                      self.keyVar = Key_Generator.DES3_generation()
                      self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
+                     configFile.write(iv)
 
                      configFile.close()
 
@@ -127,6 +161,7 @@ class MyKeysGui(tk.Frame):
                      self.keyVar = Key_Generator.DES3_generation()
                      self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
+                     configFile.write(iv)
 
                      configFile.close()
 
@@ -140,6 +175,7 @@ class MyKeysGui(tk.Frame):
                      self.keyVar = Key_Generator.DES3_generation()
                      self.generatedKey.set(self.keyVar)
                      configFile.write(self.generatedKey.get())
+                     configFile.write(iv)
 
                      configFile.close()
 
@@ -230,7 +266,7 @@ class MyKeysGui(tk.Frame):
         # encryption dropdown menu
         self.eType = tk.StringVar()
         eTypeDrop = ttk.Combobox(configTab, textvariable = self.eType, state='readonly')
-        eTypeDrop['values'] = ("pgp", "DES3", "AES")
+        eTypeDrop['values'] = ("pgp", "fernet", "DES3", "AES")
         eTypeDrop.current(0)
         eTypeDrop.pack(expand=1, fill="both")
 
@@ -268,11 +304,8 @@ class MyKeysGui(tk.Frame):
 
         def startDecryption():
 
-        #####TO-DO: INSTANTIATE LOCAL VARIABLES: #####
-        # name: name of file, drawn from file chooser
-            fileName = ''
-        # key: drawn from key field or config file
-            key1 = self.keyVar
+        ##### INSTANTIATE LOCAL VARIABLES: #####
+            
         # email and passphrase: drawn from pgp dialog
             email1 = self.pgpEmail
             passphrase1 = self.passPhrase
@@ -282,28 +315,25 @@ class MyKeysGui(tk.Frame):
                 pgpEntryDecrypt()
 
                 ###TO-DO: CALL PGP DECRPYT FUNCTION###
-                print(fileName.get())
-                print(key1.get())
-                print(email1.get())
-                print(passphrase1.get())
-                print(self.passPhrase.get())
-                Decryot_files.decrypt_pgp(passphrase1, fileName)
-           # elif (self.dType.get() == "fernet"):
+                
+                Decryot_files.decrypt_pgp(self.passphrase1.get(), self.fileName.get())
+
+            elif (self.dType.get() == "fernet"):
                 # fernet decryption
-                #print(self.keyVar.get())
+                fernetDecrypt.decrypt(self.key1.get(), self.fileName.get())
+
+
             elif (self.dType.get() == "DES3"):
                 # DES3 decryption
-                Decryot_files.des3_decrypt(key1, fileName, iv)
+                Decryot_files.des3_decrypt(self.key1.get(), self.fileName.get(), iv)
                 # TO-DO: check it is the right keyy
                 # CALL DES3 DECRYPT FUNCTION###
 
-                print(self.keyVar.get())
             elif (self.dType.get() == "AES"):
                 # AES decryption
-                Decryot_files.decrypt_aes(fileName, key1)
+                Decryot_files.decrypt_aes(self.key1.get(), self.fileName.get())
                 ###TO-DO: CALL AES DECRYPT FUNCTION##
                 
-                print(self.keyVar.get())
 
         # pgp decryption popup window for email and passphrase
         def pgpEntryDecrypt():
@@ -354,13 +384,17 @@ class MyKeysGui(tk.Frame):
                  keyEntry.config(state='enabled')
 
         # file dialog function
-        def callFile():
-            callFileName = fd.askopenfilename()
-            fileName = callFileName
+        #def callFile():
+            #callFileName = fd.askopenfilename(filetypes = (("text files", "*.txt"),("all files", "*.*")))
+            #self.fileName.set(callFileName)
 
-        # file button
-        fileBtn = tk.Button(decryptionTab, text='Choose File', command=callFile)
-        fileBtn.pack(expand=1, fill="both")
+        # file name label
+        fileLbl = ttk.Label(decryptionTab, text='Enter File Name')
+        fileLbl.pack(expand=1, fill="both")
+
+        # file name entry
+        fileEntr = tk.Entry(decryptionTab, textvariable=self.fileName)
+        fileEntr.pack(expand=1, fill="both")
         
         # decryption type label
         decryptLbl = ttk.Label(decryptionTab, text='Decryption Type')
@@ -369,7 +403,7 @@ class MyKeysGui(tk.Frame):
         # decryption dropdown menu
         self.dType = tk.StringVar()
         dTypeDrop = ttk.Combobox(decryptionTab, textvariable = self.dType, state='readonly')
-        dTypeDrop['values'] = ("pgp", "DES3", "AES")
+        dTypeDrop['values'] = ("pgp", "fernet","DES3", "AES")
         dTypeDrop.current(0)
         dTypeDrop.pack(expand=1, fill="both")
         dTypeDrop.bind("<<ComboboxSelected>>", checkDropdown)
@@ -379,7 +413,7 @@ class MyKeysGui(tk.Frame):
         decryptKeylbl.pack(expand=1, fill="both")
 
         # decryption key entry box
-        keyEntry = ttk.Entry(decryptionTab, textvariable=self.keyVar, state='disabled')
+        keyEntry = ttk.Entry(decryptionTab, textvariable=self.key1, state='disabled')
         keyEntry.pack(expand=1, fill="both")
 
         # decryption start button
