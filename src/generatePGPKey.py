@@ -1,8 +1,8 @@
-# python-gnupg
-# install:
-# pip3 install python-gnupg
 import gnupg
 
+
+# This should be incorporated with the GUI ###
+# If statements should be added once multiple encryption methods are added ###
 
 class GenerateKeyPgp:
 
