@@ -43,20 +43,26 @@ myKeys will be a keylogger designed for offensive security testing. The program 
 * [Ben Jenkins](https://github.com/benjaminjenkins/CIS350-HW2-jenkins)
 
 ## Prerequisites
+### GUI and Payload
 * Install Gnupg -  on your computer via the website https://gnupg.org/download/
-
-* Have the google cloud server that was created for the project    
 
 * enter to your command line and Pip for gnupg, Cryptodome, pynupt, cryptography, requests  
 
 * make sure that the path to the project and for gnupg is the same as written inside the code
+### Cloud
+* The cloud machine must have python installed    
 
 ## Run Instructions
-* Run the configuration tab through the GUI to create a config file
-* Run the google cloud server
-* Run Keylogger payload
+#### GUI
+* Run the GUI.py file
+* Use the configuration tab in the GUI to create a config file
 * Connect to server through GUI download tab (IP: 35.231.244.179)
 * Enter files you want to download
 * Decrypt file through decrypt tab using generated key (bottom of config tab)
+### Cloud
+* Run the python files (tcp_server.py and udp_server.py) from the command line
+### Payload
+* Download the keylogger file and the generated config file to the same directory
+* Run the keylogger.py payload
 
 
